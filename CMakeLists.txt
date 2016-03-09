@@ -31,10 +31,13 @@ macro(targets)
 	if(NOT "${target_suffix} " STREQUAL " ")
 	  get_rclcpp_information("${rmw_implementation}" "rclcpp${target_suffix}")
 	endif()
+		MESSAGE("BINARY DIR IS IN: " ${CMAKE_BINARY_DIR})
 	
 	include_directories(
+		${CMAKE_BINARY_DIR}/rosidl_generator_cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/
 		${CMAKE_CURRENT_SOURCE_DIR}/build/rosidl_generator_cpp	
+			
 	)
         file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_simple_logger/*.c*)
         add_library(ros2_simple_logger_lib${target_suffix} ${SRC_FILES})
@@ -42,18 +45,22 @@ macro(targets)
         	"rclcpp"
 		
 	)
+	add_dependencies(ros2_simple_logger_lib${target_suffix} ${PROJECT_NAME})
 	target_link_libraries(ros2_simple_logger_lib${target_suffix}
 		-pthread
 	)
 	add_executable(ros2_simple_logger_test${target_suffix} ${CMAKE_CURRENT_SOURCE_DIR}/test/test_main.cpp)
    	ament_target_dependencies(ros2_simple_logger_test${target_suffix}
         	"rclcpp"	
-		ros2_simple_logger_lib${target_suffix}
+		 ros2_simple_logger_lib${target_suffix}
+		 pthread
 	)
+	
+      
         target_link_libraries(ros2_simple_logger_test${target_suffix}
 		ros2_simple_logger_lib${target_suffix}
-		${CMAKE_CURRENT_SOURCE_DIR}/build/libros2_simple_logger__rosidl_generator_c.so
-		${CMAKE_CURRENT_SOURCE_DIR}/build/libros2_simple_logger__rosidl_typesupport_opensplice_cpp.so
+		${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_generator_c.so
+		${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_opensplice_cpp.so
 
             -pthread)
 	#install(TARGETS ros2_parameter_server${target_suffix} DESTINATION bin)
@@ -67,12 +74,14 @@ call_for_each_rmw_implementation(targets GENERATE_DEFAULT)
 
 
 file(GLOB INCLUDE_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/"
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/*.h*"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_simple_logger/*.h*"
 )
 message(STATUS "FILES TO INSTALL (ROS2_SIMPLE_LOGGER)")
 message(STATUS ${INCLUDE_FILES})
 install(FILES ${INCLUDE_FILES} DESTINATION include/ros2_simple_logger) 
 install(TARGETS ros2_simple_logger_lib DESTINATION lib)
+file(GLOB BINARY_FILES ${CMAKE_BINARY_DIR}/*.so)
+install(FILES ${BINARY_FILES} DESTINATION lib)
 
 
 ament_export_include_directories(include)
