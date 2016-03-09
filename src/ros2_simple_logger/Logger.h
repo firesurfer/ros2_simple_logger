@@ -7,6 +7,7 @@
 #include <ctime>   // localtime
 
 #include <iomanip>
+#include <ros2_simple_logger/ConsoleColor.h>
 typedef enum
 {
     Debug = 0,
@@ -35,6 +36,11 @@ public:
     static void initLogger(rclcpp::node::Node::SharedPtr node);
 
     static std::shared_ptr<simpleLogger> getInstance();
+    void enableDebug(bool state)
+    {
+        debugOn = state;
+    }
+
     void writeEntry(std::string message, LogLevel level = LogLevel::Info)
     {
         std::lock_guard<std::mutex> lock(globalLogger_mutex);
@@ -50,6 +56,37 @@ public:
         auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
 
+
+        std::string levelStr = "";
+        switch(level)
+        {
+        case Debug:
+        {
+           levelStr = "Debug ";
+           if(!debugOn)
+                return;
+        }
+            break;
+        case Info:
+            levelStr = printInColor("Info ", ConsoleColor::FG_GREEN);
+            break;
+        case Important:
+            levelStr = printInColor("Important ", ConsoleColor::FG_BLUE);
+            break;
+        case Warning:
+            levelStr = printInColor("Warning ", ConsoleColor::FG_RED);
+            break;
+        case Exception:
+            levelStr = printInColor("Exception ", ConsoleColor::FG_RED);
+            break;
+        case Error:
+            levelStr = printInColor("Error ", ConsoleColor::FG_RED);
+            break;
+
+        case Fatal:
+            levelStr = printInColor("Fatal ", ConsoleColor::FG_RED);
+            break;
+        }
 
         std::cout<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << level << " : " << message << std::endl;
     }
@@ -77,6 +114,7 @@ private:
 
     rclcpp::node::Node::SharedPtr node;
     ros2_simple_logger::msg::LoggingMessage::SharedPtr msg;
+    bool debugOn = true;
 
 };
 
@@ -89,14 +127,22 @@ public:
         using namespace std::placeholders;
         subscription = node->create_subscription<ros2_simple_logger::msg::LoggingMessage>("ros2_log", std::bind(&simpleLoggerSubscriber::internalListenerCallback, this,_1), rmw_qos_profile_sensor_data);
     }
+    void setLoggingCallback(std::function<void(ros2_simple_logger::msg::LoggingMessage::SharedPtr)> func)
+    {
+        loggingCallback = func;
+    }
+
 private:
     void internalListenerCallback(ros2_simple_logger::msg::LoggingMessage::SharedPtr msg)
     {
         std::cout << msg->message << std::endl;
+        if(loggingCallback)
+            loggingCallback(msg);
     }
 
     rclcpp::node::Node::SharedPtr node;
-     rclcpp::subscription::Subscription<ros2_simple_logger::msg::LoggingMessage>::SharedPtr subscription;
+    rclcpp::subscription::Subscription<ros2_simple_logger::msg::LoggingMessage>::SharedPtr subscription;
+    std::function<void(ros2_simple_logger::msg::LoggingMessage::SharedPtr)> loggingCallback;
 
 };
 

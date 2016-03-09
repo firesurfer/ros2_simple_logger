@@ -1,8 +1,7 @@
 #ifndef CONSOLE_COLOR_H
 #define CONSOLE_COLOR_H
 #include <string>
-namespace ros2_components
-{
+
 typedef enum ConsoleColor {
         FG_RED      = 31,
         FG_GREEN    = 32,
@@ -15,5 +14,5 @@ typedef enum ConsoleColor {
     }ConsoleColor;
     
 std::string printInColor(const std::string& str, ConsoleColor color);
-}
+
 #endif
