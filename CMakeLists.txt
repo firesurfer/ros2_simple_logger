@@ -24,7 +24,7 @@ set(message_files
 
 	 ${message_files}
 	  DEPENDENCIES builtin_interfaces
-    	SKIP_INSTALL
+    	  SKIP_INSTALL
 )
 
 macro(targets)
@@ -33,10 +33,10 @@ macro(targets)
 	endif()
 	
 	include_directories(
-		${CMAKE_CURRENT_SOURCE_DIR}/src
+		${CMAKE_CURRENT_SOURCE_DIR}/src/
 		${CMAKE_CURRENT_SOURCE_DIR}/build/rosidl_generator_cpp	
 	)
-        file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c*)
+        file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_simple_logger/*.c*)
         add_library(ros2_simple_logger_lib${target_suffix} ${SRC_FILES})
 	ament_target_dependencies(ros2_simple_logger_lib${target_suffix}
         	"rclcpp"
