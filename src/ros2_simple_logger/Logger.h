@@ -5,7 +5,7 @@
 #include <mutex>
 #include <chrono>  // chrono::system_clock
 #include <ctime>   // localtime
-
+#include <sstream>
 #include <iomanip>
 #include <ros2_simple_logger/ConsoleColor.h>
 typedef enum
@@ -88,10 +88,11 @@ public:
             break;
         }
 
-        std::cout<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << level << " : " << message << std::endl;
+        std::cout<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << levelStr << " : " << message << std::endl;
     }
     void set_now(builtin_interfaces::msg::Time & time)
     {
+
         std::chrono::nanoseconds now = std::chrono::high_resolution_clock::now().time_since_epoch();
         if (now <= std::chrono::nanoseconds(0)) {
             time.sec = time.nanosec = 0;
@@ -100,6 +101,7 @@ public:
             time.nanosec = now.count() % 1000000000;
         }
     }
+
 private:
 
     rclcpp::publisher::Publisher<ros2_simple_logger::msg::LoggingMessage>::SharedPtr publisher;
@@ -135,9 +137,57 @@ public:
 private:
     void internalListenerCallback(ros2_simple_logger::msg::LoggingMessage::SharedPtr msg)
     {
-        std::cout << msg->message << std::endl;
+        std::string levelStr = "";
+        int level = msg->level;
+        switch(level)
+        {
+        case Debug:
+           levelStr = "Debug ";
+
+            break;
+        case Info:
+            levelStr = printInColor("Info ", ConsoleColor::FG_GREEN);
+            break;
+        case Important:
+            levelStr = printInColor("Important ", ConsoleColor::FG_BLUE);
+            break;
+        case Warning:
+            levelStr = printInColor("Warning ", ConsoleColor::FG_RED);
+            break;
+        case Exception:
+            levelStr = printInColor("Exception ", ConsoleColor::FG_RED);
+            break;
+        case Error:
+            levelStr = printInColor("Error ", ConsoleColor::FG_RED);
+            break;
+
+        case Fatal:
+            levelStr = printInColor("Fatal ", ConsoleColor::FG_RED);
+            break;
+        }
+
+        std::cout<< get_time_as_string(get_time_from_msg(msg)) << " : " << levelStr << " : " << msg->message << std::endl;
+
         if(loggingCallback)
             loggingCallback(msg);
+    }
+    time_t get_time_from_msg(ros2_simple_logger::msg::LoggingMessage::SharedPtr msg)
+    {
+        int64_t unixtime = msg->stamp.sec + msg->stamp.nanosec/1000000000;
+
+        //auto chrono =std::chrono::duration_cast<std::chrono::time_point>(unixtime);
+
+        time_t time = unixtime;
+
+               // std::chrono::milliseconds(unixtime);
+
+        return time;
+    }
+    std::string get_time_as_string(time_t time)
+    {
+        std::stringstream ss;
+        ss << std::put_time(std::localtime(&time), "%Y-%m-%d %X");
+        return ss.str();
     }
 
     rclcpp::node::Node::SharedPtr node;

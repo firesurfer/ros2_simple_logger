@@ -20,10 +20,16 @@ int main(void)
 	simpleLogger::initLogger(node);
 	simpleLoggerSubscriber* test = new simpleLoggerSubscriber(node);
 	std::string input = "";
+    LOG_DEBUG("Test");
+    LOG_INFO("Test");
+    LOG_IMPORTANT("Test");
+    LOG_WARNING("Test");
+    LOG_EXCEPTION("Test");
+
 	while(input != "exit")
 	{
 		
         std::getline (std::cin,input);
-		LOG_DEBUG(input)
+        LOG_INFO(input)
 	}
 }
