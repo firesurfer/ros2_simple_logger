@@ -82,9 +82,6 @@ install(TARGETS ros2_simple_logger_lib DESTINATION lib)
 file(GLOB BINARY_FILES ${CMAKE_BINARY_DIR}/*.so)
 install(FILES ${BINARY_FILES} DESTINATION lib)
 
-file(GLOB LOG_MSG_INCLUDE_FILES  "${CMAKE_BINARY_DIR}/rosidl_generator_cpp/ros2_simple_logger/msg/*.h*")
-#MESSAGE(${LOG_MSG_INCLUDE_FILES} )
-#install(FILES ${LOG_MSG_INCLUDE_FILES} DESTINATION include/ros2_simple_logger/msg)
 
 
 ament_export_include_directories(include)
