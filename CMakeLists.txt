@@ -62,7 +62,7 @@ macro(targets)
 		${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_opensplice_cpp.so
 
             -pthread)
-	#install(TARGETS ros2_parameter_server${target_suffix} DESTINATION bin)
+	
 
 endmacro()
 
@@ -75,15 +75,20 @@ call_for_each_rmw_implementation(targets GENERATE_DEFAULT)
 file(GLOB INCLUDE_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/"
 	"${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_simple_logger/*.h*"
 )
-message(STATUS "FILES TO INSTALL (ROS2_SIMPLE_LOGGER)")
-message(STATUS ${INCLUDE_FILES})
+
 install(FILES ${INCLUDE_FILES} DESTINATION include/ros2_simple_logger) 
 install(TARGETS ros2_simple_logger_lib DESTINATION lib)
+
 file(GLOB BINARY_FILES ${CMAKE_BINARY_DIR}/*.so)
 install(FILES ${BINARY_FILES} DESTINATION lib)
 
+file(GLOB LOG_MSG_INCLUDE_FILES  "${CMAKE_BINARY_DIR}/rosidl_generator_cpp/ros2_simple_logger/msg/*.h*")
+MESSAGE(${LOG_MSG_INCLUDE_FILES} )
+install(FILES ${LOG_MSG_INCLUDE_FILES} DESTINATION include/ros2_simple_logger/msg)
+
 
 ament_export_include_directories(include)
-ament_export_libraries(ros2_simple_logger_lib)
+
+ament_export_libraries(ros2_simple_logger_lib ${BINARY_FILES})
 
 ament_package()
