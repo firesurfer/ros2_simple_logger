@@ -88,7 +88,9 @@ public:
             break;
         }
 
+#if __GNUG__ > 5
         std::cout<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << levelStr << " : " << message << std::endl;
+#endif
     }
     void set_now(builtin_interfaces::msg::Time & time)
     {
@@ -186,7 +188,9 @@ private:
     std::string get_time_as_string(time_t time)
     {
         std::stringstream ss;
+#if __GNUG__ > 5
         ss << std::put_time(std::localtime(&time), "%Y-%m-%d %X");
+#endif
         return ss.str();
     }
 
