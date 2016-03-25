@@ -97,6 +97,7 @@ file(GLOB LOG_MSG_INCLUDE_FILES  "${CMAKE_BINARY_DIR}/rosidl_generator_cpp/ros2_
 #MESSAGE(${LOG_MSG_INCLUDE_FILES} )
 #install(FILES ${LOG_MSG_INCLUDE_FILES} DESTINATION include/ros2_simple_logger/msg)
 
+install(TARGETS ros2_simple_logger_echo DESTINATION bin)
 
 ament_export_include_directories(include)
 
