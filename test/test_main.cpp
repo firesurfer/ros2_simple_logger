@@ -26,6 +26,13 @@ int main(void)
     LOG_WARNING("Test");
     LOG_EXCEPTION("Test");
 
+    LOG(LogLevel::Debug) << "stream test" << std::endl;
+    LOG(LogLevel::Info) << "stream test" << std::endl;
+
+    LOG(LogLevel::Important) << "stream test" << std::endl;
+    LOG(LogLevel::Warning) << "stream test" << std::endl;
+
+    LOG(LogLevel::Fatal) << "stream test" << std::endl;
 	while(input != "exit")
 	{
 		

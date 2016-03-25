@@ -8,6 +8,8 @@
 #include <sstream>
 #include <iomanip>
 #include <ros2_simple_logger/ConsoleColor.h>
+#include <ostream>
+#include <streambuf>
 typedef enum
 {
     Debug = 0,
@@ -29,16 +31,62 @@ typedef enum
 #define LOG_ERROR(x) simpleLogger::getInstance()->writeEntry(x, LogLevel::Error);
 #define LOG_FATAL(x) simpleLogger::getInstance()->writeEntry(x, LogLevel::Fatal);
 
+#define LOG(level) simpleLogger::getInstance()->getStream(level)
 
-class simpleLogger
+class simpleLogger : public std::ostream, std::streambuf
 {
 public:
     static void initLogger(rclcpp::node::Node::SharedPtr node);
 
     static std::shared_ptr<simpleLogger> getInstance();
+
+
     void enableDebug(bool state)
     {
         debugOn = state;
+    }
+    simpleLogger& getStream(LogLevel level = LogLevel::Info)
+    {
+        log_stream.str("");
+        builtin_interfaces::msg::Time time;
+        set_now(time);
+
+        msg->level = level;
+
+        msg->stamp = time;
+
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+        std::string levelStr = "";
+        switch(level)
+        {
+        case Debug:
+            levelStr = printInColor("Debug", ConsoleColor::FG_DEFAULT, ConsoleColor::BG_GREEN);
+            break;
+        case Info:
+            levelStr = printInColor("Info ", ConsoleColor::FG_GREEN);
+            break;
+        case Important:
+            levelStr = printInColor("Important ", ConsoleColor::FG_BLUE);
+            break;
+        case Warning:
+            levelStr = printInColor("Warning ", ConsoleColor::FG_RED);
+            break;
+        case Exception:
+            levelStr = printInColor("Exception ", ConsoleColor::FG_RED);
+            break;
+        case Error:
+            levelStr = printInColor("Error ", ConsoleColor::FG_RED);
+            break;
+
+        case Fatal:
+            levelStr = printInColor("Fatal ", ConsoleColor::FG_RED);
+            break;
+        }
+        //#if __GNUG__ > 5
+        log_stream<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << levelStr << " : ";
+        //#endif
+        return *this;
     }
 
     void writeEntry(std::string message, LogLevel level = LogLevel::Info)
@@ -54,18 +102,11 @@ public:
 
         auto now = std::chrono::system_clock::now();
         auto in_time_t = std::chrono::system_clock::to_time_t(now);
-
-
-
         std::string levelStr = "";
         switch(level)
         {
         case Debug:
-        {
-           levelStr = "Debug ";
-           if(!debugOn)
-                return;
-        }
+            levelStr = printInColor("Debug", ConsoleColor::FG_DEFAULT, ConsoleColor::BG_GREEN);
             break;
         case Info:
             levelStr = printInColor("Info ", ConsoleColor::FG_GREEN);
@@ -88,9 +129,10 @@ public:
             break;
         }
 
-#if __GNUG__ > 5
+        //#if __GNUG__ > 5
         std::cout<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << levelStr << " : " << message << std::endl;
-#endif
+        //#endif
+
     }
     void set_now(builtin_interfaces::msg::Time & time)
     {
@@ -107,7 +149,7 @@ public:
 private:
 
     rclcpp::publisher::Publisher<ros2_simple_logger::msg::LoggingMessage>::SharedPtr publisher;
-    simpleLogger(rclcpp::node::Node::SharedPtr _node)
+    simpleLogger(rclcpp::node::Node::SharedPtr _node):std::ostream(this)
     {
         node = _node;
         publisher = node->create_publisher<ros2_simple_logger::msg::LoggingMessage>("ros2_log", rmw_qos_profile_sensor_data);
@@ -119,6 +161,28 @@ private:
     rclcpp::node::Node::SharedPtr node;
     ros2_simple_logger::msg::LoggingMessage::SharedPtr msg;
     bool debugOn = true;
+    std::stringstream log_stream;
+    std::stringstream msg_stream;
+
+    int overflow(int c)
+    {
+        char ch = (char)c;
+        if(ch == '\n')
+        {
+
+            std::cout << log_stream.str()  << std::endl;
+            log_stream.str("");
+            msg->message = msg_stream.str();
+            publisher->publish(msg);
+            msg_stream.str("");
+        }
+        else
+        {
+            log_stream << ch;
+            msg_stream << ch;
+        }
+        return 0;
+    }
 
 };
 
@@ -144,8 +208,7 @@ private:
         switch(level)
         {
         case Debug:
-           levelStr = "Debug ";
-
+            levelStr = printInColor("Debug", ConsoleColor::FG_DEFAULT, ConsoleColor::BG_GREEN);
             break;
         case Info:
             levelStr = printInColor("Info ", ConsoleColor::FG_GREEN);
@@ -181,16 +244,16 @@ private:
 
         time_t time = unixtime;
 
-               // std::chrono::milliseconds(unixtime);
+        // std::chrono::milliseconds(unixtime);
 
         return time;
     }
     std::string get_time_as_string(time_t time)
     {
         std::stringstream ss;
-#if __GNUG__ > 5
+
         ss << std::put_time(std::localtime(&time), "%Y-%m-%d %X");
-#endif
+
         return ss.str();
     }
 

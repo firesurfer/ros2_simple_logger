@@ -7,12 +7,12 @@ typedef enum ConsoleColor {
         FG_GREEN    = 32,
         FG_BLUE     = 34,
         FG_DEFAULT  = 39,
-       // BG_RED      = 41,
-        //BG_GREEN    = 42,
-        //BG_BLUE     = 44,
+        BG_RED      = 41,
+        BG_GREEN    = 42,
+        BG_BLUE     = 44,
         BG_DEFAULT  = 49
     }ConsoleColor;
     
-std::string printInColor(const std::string& str, ConsoleColor color);
+std::string printInColor(const std::string& str, ConsoleColor color, ConsoleColor bgcolor = BG_DEFAULT);
 
 #endif
