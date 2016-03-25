@@ -13,8 +13,9 @@ void spin()
 
 
 }
-int main(void)
+int main(int argc, char **argv)
 {
+    rclcpp::init(argc,argv);
 	node = std::make_shared<rclcpp::node::Node>("DemoLogger");
 	 std::thread * t = new std::thread(&spin);
 	simpleLogger::initLogger(node);

@@ -49,17 +49,28 @@ macro(targets)
 		-pthread
 	)
 	add_executable(ros2_simple_logger_test${target_suffix} ${CMAKE_CURRENT_SOURCE_DIR}/test/test_main.cpp)
-   	ament_target_dependencies(ros2_simple_logger_test${target_suffix}
+        ament_target_dependencies(ros2_simple_logger_test${target_suffix} ${CMAKE_CURRENT_SOURCE_DIR}/test/test_main.cpp
         	"rclcpp"	
 		 ros2_simple_logger_lib${target_suffix}
 		 pthread
 	)
-	
+        add_executable(ros2_simple_logger_echo${target_suffix} ${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_simple_logger/SimpleLoggerEcho.cpp)
+        ament_target_dependencies(ros2_simple_logger_echo${target_suffix} ${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_simple_logger/SimpleLoggerEcho.cpp
+                "rclcpp"
+                 ros2_simple_logger_lib${target_suffix}
+                 pthread
+        )
       
         target_link_libraries(ros2_simple_logger_test${target_suffix}
 		ros2_simple_logger_lib${target_suffix}
 		${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_generator_c.so
 		${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_opensplice_cpp.so
+
+            -pthread)
+        target_link_libraries(ros2_simple_logger_echo${target_suffix}
+                ros2_simple_logger_lib${target_suffix}
+                ${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_generator_c.so
+                ${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_opensplice_cpp.so
 
             -pthread)
 	
