@@ -1,5 +1,5 @@
 #include "ros2_simple_logger/Logger.h"
-
+#include "ros2_simple_logger/SimpleLoggerSubscriber.h"
 rclcpp::node::Node::SharedPtr node;
 void spin()
 {
