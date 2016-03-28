@@ -27,7 +27,9 @@ public:
     std::string get_time_as_string(time_t time)
     {
         std::stringstream ss;
-#if __GNUC__ > 5
+
+#if __GNUC__ >= 5
+
         ss << std::put_time(std::localtime(&time), "%Y-%m-%d %X");
 #endif
         return ss.str();

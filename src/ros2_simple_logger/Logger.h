@@ -83,7 +83,7 @@ public:
             levelStr = printInColor("Fatal ", ConsoleColor::FG_RED);
             break;
         }
-#if __GNUC__ > 5
+#if __GNUC__ >= 5
 
         log_stream<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << levelStr << " : ";
 #endif
@@ -130,7 +130,7 @@ public:
             break;
         }
 
-#if __GNUC__ > 5
+#if __GNUC__ >= 5
         std::cout<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << levelStr << " : " << message << std::endl;
 #endif
     }

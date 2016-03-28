@@ -15,6 +15,7 @@ void spin()
 }
 int main(int argc, char **argv)
 {
+    std::cout << "GCC Version:" << __GNUC__ << std::endl;
     rclcpp::init(argc,argv);
 	node = std::make_shared<rclcpp::node::Node>("DemoLogger");
 	 std::thread * t = new std::thread(&spin);
