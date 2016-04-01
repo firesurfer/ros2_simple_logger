@@ -22,23 +22,19 @@ int main(int argc, char **argv)
 	simpleLogger::initLogger(node);
 	simpleLoggerSubscriber* test = new simpleLoggerSubscriber(node);
 	std::string input = "";
-    LOG_DEBUG("Test");
-    LOG_INFO("Test");
-    LOG_IMPORTANT("Test");
-    LOG_WARNING("Test");
-    LOG_EXCEPTION("Test");
+
 
     LOG(LogLevel::Debug) << "stream test" << std::endl;
     LOG(LogLevel::Info) << "stream test" << std::endl;
 
     LOG(LogLevel::Important) << "stream test" << std::endl;
     LOG(LogLevel::Warning) << "stream test" << std::endl;
-
+    LOG(LogLevel::Exception) << "stream test" << std::endl;
     LOG(LogLevel::Fatal) << "stream test" << std::endl;
 	while(input != "exit")
 	{
 		
         std::getline (std::cin,input);
-        LOG_INFO(input)
+        LOG(LogLevel::Info) << input << std::endl;
 	}
 }

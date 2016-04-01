@@ -23,13 +23,7 @@ typedef enum
 }LogLevel;
 
 
-#define LOG_DEBUG(x) simpleLogger::getInstance()->writeEntry(x, LogLevel::Debug);
-#define LOG_INFO(x) simpleLogger::getInstance()->writeEntry(x, LogLevel::Info);
-#define LOG_IMPORTANT(x) simpleLogger::getInstance()->writeEntry(x, LogLevel::Important);
-#define LOG_WARNING(x) simpleLogger::getInstance()->writeEntry(x, LogLevel::Warning);
-#define LOG_EXCEPTION(x) simpleLogger::getInstance()->writeEntry(x, LogLevel::Exception);
-#define LOG_ERROR(x) simpleLogger::getInstance()->writeEntry(x, LogLevel::Error);
-#define LOG_FATAL(x) simpleLogger::getInstance()->writeEntry(x, LogLevel::Fatal);
+
 
 #define LOG(level) simpleLogger::getInstance()->getStream(level)
 
@@ -90,50 +84,7 @@ public:
         return *this;
     }
 
-    void writeEntry(std::string message, LogLevel level = LogLevel::Info)
-    {
-        std::lock_guard<std::mutex> lock(globalLogger_mutex);
-        builtin_interfaces::msg::Time time;
-        set_now(time);
 
-        msg->level = level;
-        msg->message = message;
-        msg->stamp = time;
-        publisher->publish(msg);
-
-        auto now = std::chrono::system_clock::now();
-        auto in_time_t = std::chrono::system_clock::to_time_t(now);
-        std::string levelStr = "";
-        switch(level)
-        {
-        case Debug:
-            levelStr = printInColor("Debug", ConsoleColor::FG_DEFAULT, ConsoleColor::BG_GREEN);
-            break;
-        case Info:
-            levelStr = printInColor("Info ", ConsoleColor::FG_GREEN);
-            break;
-        case Important:
-            levelStr = printInColor("Important ", ConsoleColor::FG_BLUE);
-            break;
-        case Warning:
-            levelStr = printInColor("Warning ", ConsoleColor::FG_RED);
-            break;
-        case Exception:
-            levelStr = printInColor("Exception ", ConsoleColor::FG_RED);
-            break;
-        case Error:
-            levelStr = printInColor("Error ", ConsoleColor::FG_RED);
-            break;
-
-        case Fatal:
-            levelStr = printInColor("Fatal ", ConsoleColor::FG_RED);
-            break;
-        }
-
-#if __GNUC__ >= 5
-        std::cout<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << levelStr << " : " << message << std::endl;
-#endif
-    }
     void set_now(builtin_interfaces::msg::Time & time)
     {
 
