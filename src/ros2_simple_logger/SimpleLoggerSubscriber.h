@@ -11,6 +11,10 @@ public:
     {
         loggingCallback = func;
     }
+    void setLogToConsole(bool state = true)
+    {
+        disableLogToConsole = !state;
+    }
 
     time_t get_time_from_msg(ros2_simple_logger::msg::LoggingMessage::SharedPtr msg)
     {
@@ -37,6 +41,12 @@ public:
 private:
     void internalListenerCallback(ros2_simple_logger::msg::LoggingMessage::SharedPtr msg)
     {
+
+        if(loggingCallback)
+            loggingCallback(msg);
+
+        if(disableLogToConsole)
+            return;
         std::string levelStr = "";
         int level = msg->level;
         switch(level)
@@ -53,25 +63,19 @@ private:
         case Warning:
             levelStr = printInColor("Warning ", ConsoleColor::FG_RED);
             break;
-        case Exception:
-            levelStr = printInColor("Exception ", ConsoleColor::FG_RED);
-            break;
         case Error:
-            levelStr = printInColor("Error ", ConsoleColor::FG_RED);
+            levelStr = printInColor("Error ", ConsoleColor::FG_RED, ConsoleColor::BG_YELLOW);
             break;
 
         case Fatal:
-            levelStr = printInColor("Fatal ", ConsoleColor::FG_RED);
+            levelStr = printInColor("Fatal ", ConsoleColor::FG_RED, ConsoleColor::BG_WHITE);
             break;
         }
-
         std::cout<< get_time_as_string(get_time_from_msg(msg)) << " : " << levelStr << " : " << msg->message << std::endl;
 
-        if(loggingCallback)
-            loggingCallback(msg);
     }
 
-
+    bool disableLogToConsole = false;
     rclcpp::node::Node::SharedPtr node;
     rclcpp::subscription::Subscription<ros2_simple_logger::msg::LoggingMessage>::SharedPtr subscription;
     std::function<void(ros2_simple_logger::msg::LoggingMessage::SharedPtr)> loggingCallback;
