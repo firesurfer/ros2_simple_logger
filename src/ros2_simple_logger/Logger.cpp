@@ -20,6 +20,6 @@ std::shared_ptr<simpleLogger> simpleLogger::getInstance()
     if(instance != NULL)
         return instance;
     else
-        throw std::runtime_error("Instance was destroyed");
+        throw std::runtime_error("Instance was destroyed or not created - did you call initLogger");
 
 }

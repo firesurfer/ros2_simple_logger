@@ -26,6 +26,7 @@ typedef enum
 
 
 #define LOG(level) simpleLogger::getInstance()->getStream(level)
+#define INIT_LOGGER simpleLogger::initLogger
 
 class simpleLogger : public std::ostream, std::streambuf
 {
