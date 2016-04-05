@@ -36,7 +36,7 @@ public:
 
         ss << std::put_time(std::localtime(&time), "%Y-%m-%d %X");
 #else
-        ss << ctime (&in_time_t);
+        ss << ctime (&time);
 #endif
         return ss.str();
     }
