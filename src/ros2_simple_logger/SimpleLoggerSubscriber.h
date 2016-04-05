@@ -35,6 +35,8 @@ public:
 #if __GNUC__ >= 5
 
         ss << std::put_time(std::localtime(&time), "%Y-%m-%d %X");
+#else
+        ss << ctime (&in_time_t) << " : " << levelStr << " : ";
 #endif
         return ss.str();
     }

@@ -90,7 +90,10 @@ public:
         //Write preset into log_stream
 #if __GNUC__ >= 5
         log_stream<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << levelStr << " : ";
+#else
+        log_stream << ctime (&in_time_t) << " : " << levelStr << " : ";
 #endif
+
         //Return this as stream
         return *this;
     }
