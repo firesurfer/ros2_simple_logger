@@ -10,7 +10,7 @@
 #include "ros2_simple_logger/msg/logging_message.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <ros2_simple_logger/ConsoleColor.h>
-
+#include <fstream>
 
 
 typedef enum
@@ -37,6 +37,24 @@ public:
     void setLogLevel(LogLevel level)
     {
         currentLogLevel = level;
+    }
+    void setLogFilePath(std::string path)
+    {
+        std::ofstream writer(path);
+        if(writer.is_open())
+        {
+            if(logFilePath == "" && path != "")
+                logFileWriter = new std::ofstream(path);
+            else
+            {
+                delete logFileWriter;
+                if(path != "")
+                    logFileWriter = new std::ofstream(path);
+            }
+
+            this->logFilePath = path;
+
+        }
     }
 
     simpleLogger& getStream(LogLevel level = LogLevel::Info)
@@ -110,6 +128,15 @@ public:
             time.nanosec = now.count() % 1000000000;
         }
     }
+    virtual ~simpleLogger()
+    {
+        if(logFileWriter != NULL)
+        {
+            logFileWriter->flush();
+            delete logFileWriter;
+        }
+    }
+
 
 private:
 
@@ -122,7 +149,8 @@ private:
 
     std::stringstream log_stream;
     std::stringstream msg_stream;
-
+    std::string logFilePath = "";
+    std::ofstream* logFileWriter = NULL;
     LogLevel currentLogLevel = LogLevel::Info;
 
     bool emptyLog = false;
@@ -133,6 +161,7 @@ private:
         msg = std::make_shared<ros2_simple_logger::msg::LoggingMessage>();
     }
 
+
     int overflow(int c)
     {
 
@@ -142,6 +171,8 @@ private:
             if(emptyLog)
                 return 0;
             std::cout << log_stream.str()  << std::endl;
+            if(logFilePath != "")
+                *logFileWriter << log_stream.str() << std::endl;
             log_stream.str("");
             msg->message = msg_stream.str();
             publisher->publish(msg);
