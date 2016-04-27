@@ -60,17 +60,20 @@ macro(targets)
                  ros2_simple_logger_lib${target_suffix}
                  pthread
         )
-      
+        file(GLOB LIBS ${CMAKE_BINARY_DIR}/*.so)
+
+	add_dependencies(ros2_simple_logger_test${target_suffix} ${PROJECT_NAME})
         target_link_libraries(ros2_simple_logger_test${target_suffix}
 		ros2_simple_logger_lib${target_suffix}
+		${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_introspection_cpp.so
 		${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_generator_c.so
-		${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_opensplice_cpp.so
 
             -pthread)
+add_dependencies(ros2_simple_logger_test${target_suffix} ${PROJECT_NAME})
         target_link_libraries(ros2_simple_logger_echo${target_suffix}
                 ros2_simple_logger_lib${target_suffix}
-                ${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_generator_c.so
-                ${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_opensplice_cpp.so
+               ${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_introspection_cpp.so
+		${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_generator_c.so
 
             -pthread)
 	
