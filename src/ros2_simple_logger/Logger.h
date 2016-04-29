@@ -117,7 +117,7 @@ public:
     }
 
 
-    void set_now(builtin_interfaces::msg::Time & time)
+     static void set_now(builtin_interfaces::msg::Time & time)
     {
 
         std::chrono::nanoseconds now = std::chrono::high_resolution_clock::now().time_since_epoch();
