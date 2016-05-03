@@ -63,7 +63,7 @@ macro(targets)
                  ros2_simple_logger_lib${target_suffix}
                  pthread
         )
-        file(GLOB LIBS ${CMAKE_BINARY_DIR}/*.so)
+
 
 	add_dependencies(ros2_simple_logger_test${target_suffix} ${PROJECT_NAME})
         target_link_libraries(ros2_simple_logger_test${target_suffix}
@@ -84,6 +84,9 @@ macro(targets)
 
         install(TARGETS ros2_simple_logger_lib${target_suffix} DESTINATION lib)
 
+        install(TARGETS ros2_simple_logger_echo${target_suffix} DESTINATION bin)
+
+
 endmacro()
 
 
@@ -101,8 +104,6 @@ install(FILES ${INCLUDE_FILES} DESTINATION include/ros2_simple_logger)
 
 file(GLOB BINARY_FILES ${CMAKE_BINARY_DIR}/*.so)
 install(FILES ${BINARY_FILES} DESTINATION lib)
-
-install(TARGETS ros2_simple_logger_echo DESTINATION bin)
 
 ament_export_include_directories(include)
 
