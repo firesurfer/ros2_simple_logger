@@ -16,6 +16,7 @@ find_package(rmw REQUIRED)
 find_package(rmw_implementation_cmake REQUIRED)
 find_package(ament_lint_auto REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+
 set(message_files
 	"msg/LoggingMessage.msg"
 )
@@ -46,6 +47,10 @@ macro(targets)
 	include_directories(
 		${CMAKE_BINARY_DIR}/rosidl_generator_cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/
+                ${builtin_interfaces_INCLUDE_DIRS}
+                ${rclcpp_INCLUDE_DIRS}
+                ${rmw_INCLUDE_DIRS}
+                ${rmw_implementation_INCLUDE_DIRS}
 			
 	)
         file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_simple_logger/*.c*)
