@@ -6,6 +6,7 @@
 class simpleLoggerSubscriber
 {
 public:
+    typedef std::shared_ptr<simpleLoggerSubscriber> SharedPtr;
     simpleLoggerSubscriber(rclcpp::node::Node::SharedPtr _node);
     void setLoggingCallback(std::function<void(ros2_simple_logger::msg::LoggingMessage::SharedPtr)> func)
     {

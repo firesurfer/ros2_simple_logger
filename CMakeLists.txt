@@ -34,11 +34,14 @@ get_available_rmw_implementations(middleware_implementations)
   endforeach()
 
 macro(targets)
-	if(NOT "${target_suffix} " STREQUAL " ")
-	  get_rclcpp_information("${rmw_implementation}" "rclcpp${target_suffix}")
-	endif()
+        if(NOT "${target_suffix} " STREQUAL " ")
+          get_rclcpp_information("${rmw_implementation}" "rclcpp${target_suffix}")
+        endif()
 
-        MESSAGE("BINARY DIR IS IN: " ${CMAKE_BINARY_DIR})
+        if(NOT "${target_suffix}" STREQUAL "${rmw_default}")
+            return()
+        endif()
+        MESSAGE("rclcpp${target_suffix}")
 	
 	include_directories(
 		${CMAKE_BINARY_DIR}/rosidl_generator_cpp
@@ -110,9 +113,10 @@ macro(targets)
                 -pthread
         )
 
-        install(TARGETS ros2_simple_logger_lib${target_suffix} DESTINATION lib)
+        install(TARGETS ros2_simple_logger_lib DESTINATION lib)
 
-        install(TARGETS ros2_simple_logger_echo${target_suffix} DESTINATION bin)
+        install(TARGETS ros2_simple_logger_test DESTINATION tests)
+        install(TARGETS ros2_simple_logger_echo DESTINATION bin)
 
 
 endmacro()
