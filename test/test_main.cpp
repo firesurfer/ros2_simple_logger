@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     std::cout << "GCC Version:" << __GNUC__ << std::endl;
     rclcpp::init(argc,argv);
 	node = std::make_shared<rclcpp::node::Node>("DemoLogger");
-    std::thread * spinner = new std::thread(&spin);
+    std::thread  spinner(&spin);
     INIT_LOGGER(node);
     simpleLoggerSubscriber::SharedPtr test = std::make_shared<simpleLoggerSubscriber>(node);
 
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     LOG(LogLevel::Warning) << "this should show up" << std::endl;
     LOGLEVEL(LogLevel::Debug);
 
-    std::string input = "";
+   std::string input = "";
     while(input != "exit")
     {
 
@@ -50,5 +50,5 @@ int main(int argc, char **argv)
     }
     std::cout << "Going to exit now" << std::endl;
     abortSpin = true;
-    spinner->join();
+    spinner.join();
 }

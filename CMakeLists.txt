@@ -42,8 +42,8 @@ macro(targets)
         if(NOT "${target_suffix}" STREQUAL "${rmw_default}")
             return()
         endif()
-        MESSAGE("rclcpp${target_suffix}")
-	
+
+
 	include_directories(
 		${CMAKE_BINARY_DIR}/rosidl_generator_cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/
@@ -64,9 +64,6 @@ macro(targets)
 	add_dependencies(ros2_simple_logger_lib${target_suffix} ${PROJECT_NAME})
 	target_link_libraries(ros2_simple_logger_lib${target_suffix}
 		-pthread
-                #${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_introspection_cpp.so
-                #${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_generator_c.so
-                #${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_introspection_c.so
 
         )
 
@@ -74,7 +71,9 @@ macro(targets)
 
 	add_executable(ros2_simple_logger_test${target_suffix} ${CMAKE_CURRENT_SOURCE_DIR}/test/test_main.cpp)
         add_dependencies(ros2_simple_logger_test${target_suffix} ${PROJECT_NAME})
+
         get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
+
         target_compile_definitions(ros2_simple_logger_test${target_suffix} PUBLIC "RMW_IMPLEMENTATION=${rmw_implementation}")
 
         foreach(typesupport_impl ${typesupport_impls})
@@ -83,14 +82,9 @@ macro(targets)
 
         ament_target_dependencies(ros2_simple_logger_test${target_suffix} ${CMAKE_CURRENT_SOURCE_DIR}/test/test_main.cpp
                 "rclcpp${target_suffix}"
-		 ros2_simple_logger_lib${target_suffix}
-		 pthread
 	)
         target_link_libraries(ros2_simple_logger_test${target_suffix}
                 ros2_simple_logger_lib${target_suffix}
-                #${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_introspection_cpp.so
-                #${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_generator_c.so
-                #${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_introspection_c.so
                 -pthread
         )
 
@@ -107,14 +101,9 @@ macro(targets)
 
         ament_target_dependencies(ros2_simple_logger_echo${target_suffix} ${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_simple_logger/SimpleLoggerEcho.cpp
                 "rclcpp${target_suffix}"
-                 ros2_simple_logger_lib${target_suffix}
-                 pthread
         )
         target_link_libraries(ros2_simple_logger_echo${target_suffix}
                 ros2_simple_logger_lib${target_suffix}
-                #${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_introspection_cpp.so
-                #${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_generator_c.so
-                #${CMAKE_BINARY_DIR}/libros2_simple_logger__rosidl_typesupport_introspection_c.so
                 -pthread
         )
 
@@ -140,7 +129,7 @@ install(FILES ${INCLUDE_FILES} DESTINATION include/ros2_simple_logger)
 
 
 file(GLOB BINARY_FILES ${CMAKE_BINARY_DIR}/*.so)
-install(FILES ${BINARY_FILES} DESTINATION lib)
+#install(FILES ${BINARY_FILES} DESTINATION lib)
 
 ament_export_include_directories(include)
 

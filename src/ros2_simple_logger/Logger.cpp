@@ -1,6 +1,6 @@
 #include "ros2_simple_logger/Logger.h"
 
-simpleLogger simpleLogger::instance;
+simpleLogger* simpleLogger::instance = NULL;
 
 std::mutex simpleLogger::globalLogger_mutex;
 
@@ -10,9 +10,10 @@ void simpleLogger::initLogger(rclcpp::node::Node::SharedPtr _node)
     this->publisher = _node->create_publisher<ros2_simple_logger::msg::LoggingMessage>("ros2_log", rmw_qos_profile_sensor_data);
 }
 
-simpleLogger &simpleLogger::getInstance()
+simpleLogger *simpleLogger::getInstance()
 {
-
+    if(instance == NULL)
+        instance = new simpleLogger();
     return instance;
 }
 

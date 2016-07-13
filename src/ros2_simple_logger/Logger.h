@@ -25,15 +25,15 @@ typedef enum
 
 
 
-#define LOG(level) simpleLogger::getInstance().getStream(level)
-#define INIT_LOGGER simpleLogger::getInstance().initLogger
-#define LOGLEVEL(level) simpleLogger::getInstance().setLogLevel(level)
+#define LOG(level) simpleLogger::getInstance()->getStream(level)
+#define INIT_LOGGER simpleLogger::getInstance()->initLogger
+#define LOGLEVEL(level) simpleLogger::getInstance()->setLogLevel(level)
 
 class simpleLogger : public std::ostream, std::streambuf
 {
 public:
 
-    static simpleLogger& getInstance();
+    static simpleLogger* getInstance();
     static void set_now(builtin_interfaces::msg::Time & time);
 
     void setLogLevel(LogLevel level);
@@ -46,7 +46,7 @@ public:
 private:
 
     rclcpp::publisher::Publisher<ros2_simple_logger::msg::LoggingMessage>::SharedPtr publisher;
-    static simpleLogger instance;
+    static simpleLogger* instance;
 
     static std::mutex globalLogger_mutex;
 
