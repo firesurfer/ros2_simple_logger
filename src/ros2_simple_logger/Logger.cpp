@@ -1,30 +1,21 @@
 #include "ros2_simple_logger/Logger.h"
 
-simpleLogger* simpleLogger::instance = NULL;
-bool simpleLogger::logger_destroyed = false;
+simpleLogger simpleLogger::instance;
+
 std::mutex simpleLogger::globalLogger_mutex;
 
-void simpleLogger::initLogger(rclcpp::node::Node::SharedPtr node)
+void simpleLogger::initLogger(rclcpp::node::Node::SharedPtr _node)
 {
     std::lock_guard<std::mutex> lock(globalLogger_mutex);
-    if(instance == NULL)
-    {
-
-        instance = new simpleLogger(node);
-    }
+    this->publisher = _node->create_publisher<ros2_simple_logger::msg::LoggingMessage>("ros2_log", rmw_qos_profile_sensor_data);
 }
 
-simpleLogger *simpleLogger::getInstance()
+simpleLogger &simpleLogger::getInstance()
 {
-    if(logger_destroyed)
-        throw std::runtime_error("Instance was destroyed or not created - did you call initLogger");
 
-    if(instance != NULL)
-        return instance;
-    else
-        throw std::runtime_error("Instance was destroyed or not created - did you call initLogger");
-
+    return instance;
 }
+
 simpleLogger::~simpleLogger()
 {
     if(logFileWriter != NULL)
@@ -32,12 +23,9 @@ simpleLogger::~simpleLogger()
         logFileWriter->flush();
         delete logFileWriter;
     }
-    if(instance != NULL)
-    delete instance;
-    instance = NULL;
-    logger_destroyed = true;
 
 }
+
 void simpleLogger::setLogLevel(LogLevel level)
 {
     currentLogLevel = level;
@@ -56,16 +44,13 @@ void simpleLogger::setLogFilePath(std::__cxx11::string path)
             if(path != "")
                 logFileWriter = new std::ofstream(path);
         }
-
         this->logFilePath = path;
-
     }
 }
 
 simpleLogger &simpleLogger::getStream(LogLevel level)
 {
-    if(logger_destroyed)
-        throw std::runtime_error("Logger already destroyed");
+
     //Some thread safety - not perfect
     std::lock_guard<std::mutex> lock(globalLogger_mutex);
 
@@ -79,10 +64,11 @@ simpleLogger &simpleLogger::getStream(LogLevel level)
     log_stream.str("");
 
     //Prepare ros message
-    builtin_interfaces::msg::Time time;
+   // builtin_interfaces::msg::Time time;
     set_now(time);
-    msg->level = level;
-    msg->stamp = time;
+    this->msg_log_level = level;
+    //msg->level = level;
+    //msg->stamp = time;
 
     //Get time
     auto now = std::chrono::system_clock::now();
@@ -125,7 +111,6 @@ simpleLogger &simpleLogger::getStream(LogLevel level)
 
 void simpleLogger::set_now(builtin_interfaces::msg::Time &time)
 {
-
     std::chrono::nanoseconds now = std::chrono::high_resolution_clock::now().time_since_epoch();
     if (now <= std::chrono::nanoseconds(0)) {
         time.sec = time.nanosec = 0;
@@ -137,16 +122,13 @@ void simpleLogger::set_now(builtin_interfaces::msg::Time &time)
 
 
 
-simpleLogger::simpleLogger(rclcpp::node::Node::SharedPtr _node):std::ostream(this)
+simpleLogger::simpleLogger():std::ostream(this)
 {
-    node = _node;
-    publisher = node->create_publisher<ros2_simple_logger::msg::LoggingMessage>("ros2_log", rmw_qos_profile_sensor_data);
-    msg = std::make_shared<ros2_simple_logger::msg::LoggingMessage>();
+
 }
 
 int simpleLogger::overflow(int c)
 {
-
     char ch = (char)c;
     if(ch == '\n')
     {
@@ -156,6 +138,9 @@ int simpleLogger::overflow(int c)
         if(logFilePath != "")
             *logFileWriter << log_stream.str() << std::endl;
         log_stream.str("");
+        auto msg = std::make_shared<ros2_simple_logger::msg::LoggingMessage>();
+        msg->stamp = time;
+        msg->level = msg_log_level;
         msg->message = msg_stream.str();
         publisher->publish(msg);
         msg_stream.str("");

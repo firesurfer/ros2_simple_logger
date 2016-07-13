@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     INIT_LOGGER(node);
     simpleLoggerSubscriber::SharedPtr test = std::make_shared<simpleLoggerSubscriber>(node);
 
-    simpleLogger::getInstance()->setLogLevel(LogLevel::Debug);
+    LOGLEVEL(LogLevel::Debug);
     LOG(LogLevel::Debug) << " debug stream test" << std::endl;
     LOG(LogLevel::Info) << " info stream test" << std::endl;
     LOG(LogLevel::Important) << " important stream test" << std::endl;
@@ -36,11 +36,10 @@ int main(int argc, char **argv)
     LOG(LogLevel::Fatal) << "fatal stream test" << std::endl;
 
 
-    simpleLogger::getInstance()->setLogLevel(LogLevel::Warning);
+    LOGLEVEL(LogLevel::Warning);
     LOG(LogLevel::Info) << "this shouldnt show up" << std::endl;
     LOG(LogLevel::Warning) << "this should show up" << std::endl;
-
-    simpleLogger::getInstance()->setLogLevel(LogLevel::Debug);
+    LOGLEVEL(LogLevel::Debug);
 
     std::string input = "";
     while(input != "exit")

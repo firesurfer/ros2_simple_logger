@@ -7,7 +7,7 @@ int main(int argc, char **argv)
     rclcpp::init(argc,argv);
     node = std::make_shared<rclcpp::node::Node>("simpleLoggerEcho");
 
-    simpleLogger::initLogger(node);
+    INIT_LOGGER(node);
     simpleLoggerSubscriber* test = new simpleLoggerSubscriber(node);
     rclcpp::WallRate loop_rate(20);
     while(true)

@@ -24,34 +24,34 @@ typedef enum
 }LogLevel;
 
 
-#define LOG(level) simpleLogger::getInstance()->getStream(level)
-#define INIT_LOGGER simpleLogger::initLogger
+
+#define LOG(level) simpleLogger::getInstance().getStream(level)
+#define INIT_LOGGER simpleLogger::getInstance().initLogger
+#define LOGLEVEL(level) simpleLogger::getInstance().setLogLevel(level)
 
 class simpleLogger : public std::ostream, std::streambuf
 {
 public:
-    static void initLogger(rclcpp::node::Node::SharedPtr node);
-    static simpleLogger* getInstance();
+
+    static simpleLogger& getInstance();
+    static void set_now(builtin_interfaces::msg::Time & time);
 
     void setLogLevel(LogLevel level);
     void setLogFilePath(std::string path);
-
+    void initLogger(rclcpp::node::Node::SharedPtr _node);
     simpleLogger& getStream(LogLevel level = LogLevel::Info);
 
-
-    static void set_now(builtin_interfaces::msg::Time & time);
     virtual ~simpleLogger();
-
 
 private:
 
     rclcpp::publisher::Publisher<ros2_simple_logger::msg::LoggingMessage>::SharedPtr publisher;
-    static simpleLogger* instance;
-    static bool logger_destroyed;
+    static simpleLogger instance;
+
     static std::mutex globalLogger_mutex;
 
-    rclcpp::node::Node::SharedPtr node;
-    ros2_simple_logger::msg::LoggingMessage::SharedPtr msg;
+    //rclcpp::node::Node::SharedPtr node;
+    //ros2_simple_logger::msg::LoggingMessage::SharedPtr msg;
 
     std::stringstream log_stream;
     std::stringstream msg_stream;
@@ -60,9 +60,10 @@ private:
     LogLevel currentLogLevel = LogLevel::Info;
 
     bool emptyLog = false;
-    simpleLogger(rclcpp::node::Node::SharedPtr _node);
+    simpleLogger();
 
-
+    builtin_interfaces::msg::Time time;
+    LogLevel msg_log_level = LogLevel::Info;
     int overflow(int c);
 
 };
