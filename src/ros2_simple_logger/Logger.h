@@ -7,11 +7,10 @@
 #include <iomanip>
 #include <ostream>
 #include <streambuf>
-#include "ros2_simple_logger/msg/logging_message.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include <ros2_simple_logger/ConsoleColor.h>
 #include <fstream>
-
+#include "rclcpp/rclcpp.hpp"
+#include "ros2_simple_logger/msg/logging_message.hpp"
+#include <ros2_simple_logger/ConsoleColor.h>
 
 typedef enum
 {
@@ -49,7 +48,7 @@ private:
     rclcpp::publisher::Publisher<ros2_simple_logger::msg::LoggingMessage>::SharedPtr publisher;
     static simpleLogger* instance;
     static bool logger_destroyed;
-    std::mutex globalLogger_mutex;
+    static std::mutex globalLogger_mutex;
 
     rclcpp::node::Node::SharedPtr node;
     ros2_simple_logger::msg::LoggingMessage::SharedPtr msg;

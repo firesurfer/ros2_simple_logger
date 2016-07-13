@@ -2,11 +2,11 @@
 
 simpleLogger* simpleLogger::instance = NULL;
 bool simpleLogger::logger_destroyed = false;
-
+std::mutex simpleLogger::globalLogger_mutex;
 
 void simpleLogger::initLogger(rclcpp::node::Node::SharedPtr node)
 {
-
+    std::lock_guard<std::mutex> lock(globalLogger_mutex);
     if(instance == NULL)
     {
 
@@ -32,6 +32,7 @@ simpleLogger::~simpleLogger()
         logFileWriter->flush();
         delete logFileWriter;
     }
+    if(instance != NULL)
     delete instance;
     instance = NULL;
     logger_destroyed = true;
