@@ -50,9 +50,6 @@ private:
 
     static std::mutex globalLogger_mutex;
 
-    //rclcpp::node::Node::SharedPtr node;
-    //ros2_simple_logger::msg::LoggingMessage::SharedPtr msg;
-
     std::stringstream log_stream;
     std::stringstream msg_stream;
     std::string logFilePath = "";
