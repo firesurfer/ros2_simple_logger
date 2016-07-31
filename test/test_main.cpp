@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     LOG(LogLevel::Warning) << "this should show up" << std::endl;
     LOGLEVEL(LogLevel::Debug);
 
-   std::string input = "";
+    std::string input = "";
     while(input != "exit")
     {
 
