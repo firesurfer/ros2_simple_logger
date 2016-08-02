@@ -29,6 +29,7 @@ typedef enum
  */
 #define LOG(level) simpleLogger::getInstance()->getStream(level)
 
+#define LOG(level) simpleLogger::getInstance()->getStream(level)
 #define INIT_LOGGER simpleLogger::getInstance()->initLogger
 #define LOGLEVEL(level) simpleLogger::getInstance()->setLogLevel(level)
 
@@ -86,10 +87,7 @@ private:
      * @brief singleton instance
      */
     static simpleLogger* instance;
-    /**
-     * @brief globalLogger_mutex
-     * used for multithreading synchronisation
-     */
+
     static std::mutex globalLogger_mutex;
     /**
      * @brief private constructor for simpleLogger
@@ -108,6 +106,7 @@ private:
      */
     bool emptyLog = false;
 
+   
 
     builtin_interfaces::msg::Time time;
     LogLevel msg_log_level = LogLevel::Info;
