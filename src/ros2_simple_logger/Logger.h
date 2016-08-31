@@ -28,8 +28,6 @@ typedef enum
  * Easy access to the simpleLogger Singleton: Usage: LOG(<LogLevel>)<< "message" << "other message" << std:endl;
  */
 #define LOG(level) simpleLogger::getInstance()->getStream(level)
-
-#define LOG(level) simpleLogger::getInstance()->getStream(level)
 #define INIT_LOGGER simpleLogger::getInstance()->initLogger
 #define LOGLEVEL(level) simpleLogger::getInstance()->setLogLevel(level)
 
