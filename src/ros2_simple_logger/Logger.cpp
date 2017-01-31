@@ -143,7 +143,8 @@ int simpleLogger::overflow(int c)
         msg->stamp = time;
         msg->level = msg_log_level;
         msg->message = msg_stream.str();
-        publisher->publish(msg);
+        if(publisher != NULL)
+            publisher->publish(msg);
         msg_stream.str("");
     }
     else
