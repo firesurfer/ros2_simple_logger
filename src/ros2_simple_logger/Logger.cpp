@@ -19,12 +19,7 @@ simpleLogger *simpleLogger::getInstance()
 
 simpleLogger::~simpleLogger()
 {
-    if(logFileWriter != NULL)
-    {
-        logFileWriter->flush();
-        delete logFileWriter;
-    }
-
+    logFileWriter.close();
 }
 
 void simpleLogger::setLogLevel(LogLevel level)
@@ -34,19 +29,11 @@ void simpleLogger::setLogLevel(LogLevel level)
 
 void simpleLogger::setLogFilePath(std::__cxx11::string path)
 {
-    std::ofstream writer(path);
-    if(writer.is_open())
-    {
-        if(logFilePath == "" && path != "")
-            logFileWriter = new std::ofstream(path);
-        else
-        {
-            delete logFileWriter;
-            if(path != "")
-                logFileWriter = new std::ofstream(path);
-        }
-        this->logFilePath = path;
-    }
+    if(path != "" && logFileWriter.is_open())
+        logFileWriter.close();
+
+    logFileWriter.open(path);
+    logFilePath = path;
 }
 
 simpleLogger &simpleLogger::getStream(LogLevel level)
@@ -136,8 +123,8 @@ int simpleLogger::overflow(int c)
         if(emptyLog)
             return 0;
         std::cout << log_stream.str()  << std::endl;
-        if(logFilePath != "")
-            *logFileWriter << log_stream.str() << std::endl;
+        if(logFileWriter.is_open())
+            logFileWriter << log_stream.str() << std::endl;
         log_stream.str("");
         auto msg = std::make_shared<ros2_simple_logger::msg::LoggingMessage>();
         msg->stamp = time;

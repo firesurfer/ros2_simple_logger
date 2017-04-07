@@ -97,7 +97,7 @@ private:
     std::stringstream log_stream;
     std::stringstream msg_stream;
     std::string logFilePath = "";
-    std::ofstream* logFileWriter = NULL;
+    std::ofstream logFileWriter;
     LogLevel currentLogLevel = LogLevel::Info;
     /**
      * @brief emptyLog - used if the current message is beneath the set log level
