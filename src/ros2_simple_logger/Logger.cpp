@@ -24,7 +24,8 @@ simpleLogger::~simpleLogger()
 
 void simpleLogger::setLogLevel(LogLevel level)
 {
-    currentLogLevel = level;
+    messageLogLevel = level;
+    printLogLevel = level;
 }
 
 void simpleLogger::setLogFilePath(std::__cxx11::string path)
@@ -38,61 +39,9 @@ void simpleLogger::setLogFilePath(std::__cxx11::string path)
 
 simpleLogger &simpleLogger::getStream(LogLevel level)
 {
-
-    //Some thread safety - not perfect
-    std::lock_guard<std::mutex> lock(globalLogger_mutex);
-
-    emptyLog = false;
-    if(level < currentLogLevel)
-    {
-        emptyLog = true;
-        return *this;
-    }
-    //clear log_stream
-    log_stream.str("");
-
-    //Prepare ros message
-   // builtin_interfaces::msg::Time time;
-    set_now(time);
-    this->msg_log_level = level;
-    //msg->level = level;
-    //msg->stamp = time;
-
-    //Get time
-    auto now = std::chrono::system_clock::now();
-    auto in_time_t = std::chrono::system_clock::to_time_t(now);
-
-    //Generate loglevel output
-    std::string levelStr = "";
-    switch(level)
-    {
-    case Debug:
-        levelStr = printInColor("Debug", ConsoleColor::FG_DEFAULT, ConsoleColor::BG_GREEN);
-        break;
-    case Info:
-        levelStr = printInColor("Info ", ConsoleColor::FG_GREEN);
-        break;
-    case Important:
-        levelStr = printInColor("Important ", ConsoleColor::FG_BLUE);
-        break;
-    case Warning:
-        levelStr = printInColor("Warning ", ConsoleColor::FG_RED);
-        break;
-    case Error:
-        levelStr = printInColor("Error ", ConsoleColor::FG_RED, ConsoleColor::BG_YELLOW);
-        break;
-
-    case Fatal:
-        levelStr = printInColor("Fatal ", ConsoleColor::FG_RED, ConsoleColor::BG_WHITE);
-        break;
-    }
-    //Write preset into log_stream
-#if __GNUC__ >= 5
-    log_stream<< std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : " << levelStr << " : ";
-#else
-    log_stream << ctime (&in_time_t) << " : " << levelStr << " : ";
-#endif
-
+    if(level != currentLogLevel)
+        log_stream<<'\n';
+    currentLogLevel = level;
     //Return this as stream
     return *this;
 }
@@ -117,29 +66,73 @@ simpleLogger::simpleLogger():std::ostream(this)
 
 int simpleLogger::overflow(int c)
 {
-    char ch = (char)c;
-    if(ch == '\n')
+    if(c == EOF)
+        return c;
+    if(c == '\n')
     {
-        if(emptyLog)
-            return 0;
-        std::cout << log_stream.str()  << std::endl;
-        if(logFileWriter.is_open())
-            logFileWriter << log_stream.str() << std::endl;
-        log_stream.str("");
-        auto msg = std::make_shared<ros2_simple_logger::msg::LoggingMessage>();
-        msg->stamp = time;
-        msg->level = msg_log_level;
-        msg->message = msg_stream.str();
-        if(publisher != NULL)
+        //Some thread safety - not perfect
+        std::lock_guard<std::mutex> lock(globalLogger_mutex);
+
+        if(log_stream.str() == "")
+            return c;
+
+        //Prepare ros message
+        //builtin_interfaces::msg::Time time;
+        set_now(time);
+        //msg->level = level;
+        //msg->stamp = time;
+
+        //Get time
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+        //Generate loglevel output
+        std::string levelStr = "";
+        switch(currentLogLevel)
+        {
+        case Debug:
+            levelStr = printInColor("Debug  : ", ConsoleColor::FG_DEFAULT, ConsoleColor::BG_GREEN);
+            break;
+        case Info:
+            levelStr = printInColor("Info   : ", ConsoleColor::FG_GREEN);
+            break;
+        case Important:
+            levelStr = printInColor("Important: ", ConsoleColor::FG_BLUE);
+            break;
+        case Warning:
+            levelStr = printInColor("Warning: ", ConsoleColor::FG_RED);
+            break;
+        case Error:
+            levelStr = printInColor("Error  : ", ConsoleColor::FG_RED, ConsoleColor::BG_YELLOW);
+            break;
+        case Fatal:
+            levelStr = printInColor("Fatal  : ", ConsoleColor::FG_RED, ConsoleColor::BG_WHITE);
+            break;
+        }
+        std::ostringstream timeStrStream;
+        //Write preset into log_stream
+    #if __GNUC__ >= 5
+        timeStrStream << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : ";
+    #else
+        timeStrStream << ctime (&in_time_t) << " : " ;
+    #endif
+
+        if(printLogLevel <= currentLogLevel)
+            std::cout << timeStrStream.str() << levelStr << log_stream.str()  << std::endl;
+        if(fileLogLevel <= currentLogLevel && logFileWriter.is_open())
+            logFileWriter << timeStrStream.str() << levelStr << log_stream.str() << '\n';
+        if(messageLogLevel <= currentLogLevel && publisher != NULL){
+            auto msg = std::make_shared<ros2_simple_logger::msg::LoggingMessage>();
+            msg->stamp = time;
+            msg->level = messageLogLevel;
+            msg->message = log_stream.str();
             publisher->publish(msg);
-        msg_stream.str("");
+        }
+        log_stream.str("");
     }
     else
     {
-        if(emptyLog)
-            return 0;
-        log_stream << ch;
-        msg_stream << ch;
+        log_stream << (char)c;
     }
-    return 0;
+    return c;
 }

@@ -98,16 +98,18 @@ private:
     std::stringstream msg_stream;
     std::string logFilePath = "";
     std::ofstream logFileWriter;
-    LogLevel currentLogLevel = LogLevel::Info;
+    LogLevel printLogLevel = LogLevel::Info;
+    LogLevel fileLogLevel = LogLevel::Info;
+    LogLevel messageLogLevel = LogLevel::Info;
     /**
      * @brief emptyLog - used if the current message is beneath the set log level
      */
-    bool emptyLog = false;
+    //bool emptyLog = false;
 
    
 
     builtin_interfaces::msg::Time time;
-    LogLevel msg_log_level = LogLevel::Info;
+    LogLevel currentLogLevel = LogLevel::Info;
     int overflow(int c);
 
 };
