@@ -91,13 +91,13 @@ int simpleLogger::overflow(int c)
         switch(currentLogLevel)
         {
         case Debug:
-            levelStr = printInColor("Debug  : ", ConsoleColor::FG_DEFAULT, ConsoleColor::BG_GREEN);
+            levelStr = printInColor("Debug  : ", ConsoleColor::FG_BLUE);
             break;
         case Info:
             levelStr = printInColor("Info   : ", ConsoleColor::FG_GREEN);
             break;
         case Important:
-            levelStr = printInColor("Important: ", ConsoleColor::FG_BLUE);
+            levelStr = printInColor("Important: ", ConsoleColor::FG_WHITE, ConsoleColor::BG_GREEN);
             break;
         case Warning:
             levelStr = printInColor("Warning: ", ConsoleColor::FG_RED);
