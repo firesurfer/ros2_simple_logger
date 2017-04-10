@@ -3,6 +3,7 @@
 #include <mutex>
 #include <chrono>
 #include <ctime>
+#include <stdio.h>
 #include <sstream>
 #include <iomanip>
 #include <ostream>
@@ -11,6 +12,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "ros2_simple_logger/msg/logging_message.hpp"
 #include <ros2_simple_logger/ConsoleColor.h>
+
 
 typedef enum
 {
@@ -31,6 +33,21 @@ typedef enum
 #define INIT_LOGGER simpleLogger::getInstance()->initLogger
 #define LOGLEVEL(level) simpleLogger::getInstance()->setLogLevel(level)
 
+/**
+ * @brief The simpleLogger class is a very simple implementation of a streambased logger.
+ * It can either be used with a rosnode or without. In case the @ref initLogger function was called, all log messages will be published to a ros logger topic.
+ *
+ * Usage:
+ * Use the defined macros:
+ *
+ * @ref INIT_LOGGER - call at the beginning with a valid rosnode as an argument.
+ * @ref LOG(level) - used for the real logging: Example: LOG(Debug) << "Test << std::endl.
+ * @ref LOGLEVEL(level) - Sets the maximum loglevel that should be printed. Standard is Info.
+ *
+ * For the rest of the functions use the getInstance function of the singleton:
+ *
+ * simpleLogger::getInstance()->....
+ */
 class simpleLogger : public std::ostream, std::streambuf
 {
 public:
@@ -40,9 +57,8 @@ public:
      */
     static simpleLogger* getInstance();
     /**
-     * @brief set_now
-     * @param time
-     * Fills the builtin ros2 time messagge with the current time
+     * @brief set_now -  Fills the builtin ros2 time messagge with the current time.
+     * @param time - Ros2 Time message.
      */
     static void set_now(builtin_interfaces::msg::Time & time);
     /**
@@ -52,15 +68,16 @@ public:
      */
     void setLogLevel(LogLevel level);
     /**
-     * @brief setLogFilePath
+     * @brief setLogFilePath - Set a path for a logfile -> This will enable logging to the given file.
      * @param path
-     * Set a path for a logfile -> This will enable logging to the given file
+     * Also it will move in case of an existing logfile the exisiting logfile to path.1.
+     * An existing logfile backup will be deleted.
      */
     void setLogFilePath(std::string path);
     /**
-     * @brief initLogger
+     * @brief initLogger -Inits the logger with the ros2 node.
      * @param _node
-     * Inits the logger with the ros2 node. Needs to be called before any log messages can be send via ros2
+     * Needs to be called before any log messages can be send via ros2.
      */
     void initLogger(rclcpp::node::Node::SharedPtr _node);
     /**
@@ -78,6 +95,10 @@ public:
 
 private:
     /**
+     * @brief private constructor for simpleLogger
+     */
+    simpleLogger();
+    /**
      * @brief publisher used for communication via ros2
      */
     rclcpp::publisher::Publisher<ros2_simple_logger::msg::LoggingMessage>::SharedPtr publisher;
@@ -85,12 +106,11 @@ private:
      * @brief singleton instance
      */
     static simpleLogger* instance;
-
-    static std::mutex globalLogger_mutex;
     /**
-     * @brief private constructor for simpleLogger
+     * @brief globalLogger_mutex - Used for implemented some kind of threadsafety. (Not perfect)
      */
-    simpleLogger();
+    static std::mutex globalLogger_mutex;
+
     /**
      * Internal streams
      */
@@ -98,19 +118,37 @@ private:
     std::stringstream msg_stream;
     std::string logFilePath = "";
     std::ofstream logFileWriter;
+    /**
+     * Default loglevels.
+     * TODO implement getter and setters
+     */
     LogLevel printLogLevel = LogLevel::Info;
     LogLevel fileLogLevel = LogLevel::Info;
     LogLevel messageLogLevel = LogLevel::Info;
-    /**
-     * @brief emptyLog - used if the current message is beneath the set log level
-     */
-    //bool emptyLog = false;
+
 
    
 
     builtin_interfaces::msg::Time time;
+    /**
+     * @brief currentLogLevel - The current set loglevel
+     */
     LogLevel currentLogLevel = LogLevel::Info;
+    /**
+     * @brief overflow
+     * @param c
+     * @return
+     * TODO write documentation
+     */
     int overflow(int c);
+
+    /**
+     * @brief check_if_file_exists  - Helperfunction for determining if a given file exists.
+     * @param filename
+     * @return true in case file exists.
+     * //TODO Move into extra file
+     */
+    bool check_if_file_exists(const std::string filename);
 
 };
 

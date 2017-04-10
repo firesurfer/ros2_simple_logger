@@ -12,6 +12,7 @@ void simpleLogger::initLogger(rclcpp::node::Node::SharedPtr _node)
 
 simpleLogger *simpleLogger::getInstance()
 {
+    //TODO check if a static local instance would be better
     if(instance == NULL)
         instance = new simpleLogger();
     return instance;
@@ -19,6 +20,7 @@ simpleLogger *simpleLogger::getInstance()
 
 simpleLogger::~simpleLogger()
 {
+    //Close the file writer
     logFileWriter.close();
 }
 
@@ -32,8 +34,31 @@ void simpleLogger::setLogFilePath(std::__cxx11::string path)
 {
     if(path != "" && logFileWriter.is_open())
         logFileWriter.close();
+    //Check if the filename already exists
+    if(check_if_file_exists(path))
+    {
+         int result = 0;
+        //Backup logfile already exists
+        if(check_if_file_exists(path+".1"))
+        {
+            //Remove it
+            result = remove((path+".1").c_str());
+            if(result != 0)
+                 throw std::runtime_error("Can't remove old logfile "+ path + ".1");
 
+        }
+        //Yes move the file to path.1
+
+        result = rename (path.c_str(), (path+".1").c_str());
+        if(result != 0)
+            throw std::runtime_error("Can't move old logfile to "+ path + ".1");
+    }
+
+    //Open the logfile
     logFileWriter.open(path);
+    //Check if we could open it
+    if(!logFileWriter.is_open())
+        throw std::runtime_error("Can't open logfile: " + path);
     logFilePath = path;
 }
 
@@ -48,6 +73,7 @@ simpleLogger &simpleLogger::getStream(LogLevel level)
 
 void simpleLogger::set_now(builtin_interfaces::msg::Time &time)
 {
+    //See ros2 demos for more information
     std::chrono::nanoseconds now = std::chrono::high_resolution_clock::now().time_since_epoch();
     if (now <= std::chrono::nanoseconds(0)) {
         time.sec = time.nanosec = 0;
@@ -135,4 +161,10 @@ int simpleLogger::overflow(int c)
         log_stream << (char)c;
     }
     return c;
+}
+
+bool simpleLogger::check_if_file_exists(const std::__cxx11::string filename)
+{
+    std::ifstream file(filename);
+    return file.good();
 }
