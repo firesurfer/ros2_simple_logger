@@ -65,7 +65,7 @@ void simpleLogger::setLogFilePath(std::__cxx11::string path)
 simpleLogger &simpleLogger::getStream(LogLevel level)
 {
     if(level != currentLogLevel)
-        log_stream<<'\n';
+        *this<<'\n';
     currentLogLevel = level;
     //Return this as stream
     return *this;
