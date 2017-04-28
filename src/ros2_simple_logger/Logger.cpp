@@ -137,11 +137,9 @@ int simpleLogger::overflow(int c)
         }
         std::ostringstream timeStrStream;
         //Write preset into log_stream
-    #if __GNUC__ >= 5
+
         timeStrStream << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X") << " : ";
-    #else
-        timeStrStream << ctime (&in_time_t) << " : " ;
-    #endif
+
 
         if(printLogLevel <= currentLogLevel)
             std::cout << timeStrStream.str() << levelStr << log_stream.str()  << std::endl;
