@@ -6,7 +6,7 @@ project(ros2_simple_logger)
 
 
 if(NOT WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -fPIC")
 endif()
 
 find_package(ament_cmake REQUIRED)
@@ -128,4 +128,5 @@ ament_export_include_directories(include)
 
 ament_export_libraries(ros2_simple_logger_lib)
 
+ament_export_dependencies(ament_cmake builtin_interfaces rclcpp rmw rmw_implementation_cmake)
 ament_package()
