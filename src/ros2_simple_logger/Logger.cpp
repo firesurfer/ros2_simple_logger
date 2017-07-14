@@ -24,6 +24,11 @@ simpleLogger::~simpleLogger()
     logFileWriter.close();
 }
 
+void simpleLogger::setLogfileSizeLimit(size_t limit)
+{
+    this->logfileSizeLimit = limit;
+}
+
 void simpleLogger::setLogLevel(LogLevel level)
 {
     messageLogLevel = level;
@@ -35,16 +40,16 @@ void simpleLogger::setLogFilePath(std::__cxx11::string path)
     if(path != "" && logFileWriter.is_open())
         logFileWriter.close();
     //Check if the filename already exists
-    if(check_if_file_exists(path))
+    if(checkIfFileExists(path))
     {
-         int result = 0;
+        int result = 0;
         //Backup logfile already exists
-        if(check_if_file_exists(path+".1"))
+        if(checkIfFileExists(path+".1"))
         {
             //Remove it
             result = remove((path+".1").c_str());
             if(result != 0)
-                 throw std::runtime_error("Can't remove old logfile "+ path + ".1");
+                throw std::runtime_error("Can't remove old logfile "+ path + ".1");
 
         }
         //Yes move the file to path.1
@@ -89,6 +94,7 @@ simpleLogger::simpleLogger():std::ostream(this)
 {
 
 }
+
 
 int simpleLogger::overflow(int c)
 {
@@ -144,7 +150,12 @@ int simpleLogger::overflow(int c)
         if(printLogLevel <= currentLogLevel)
             std::cout << timeStrStream.str() << levelStr << log_stream.str()  << std::endl;
         if(fileLogLevel <= currentLogLevel && logFileWriter.is_open())
+        {
+            //Write to logfile
             logFileWriter << timeStrStream.str() << levelStr << log_stream.str() << '\n';
+            logFileWriter.flush();
+            checkLogfile();
+        }
         if(messageLogLevel <= currentLogLevel && publisher != NULL){
             auto msg = std::make_shared<ros2_simple_logger::msg::LoggingMessage>();
             msg->stamp = time;
@@ -161,8 +172,26 @@ int simpleLogger::overflow(int c)
     return c;
 }
 
-bool simpleLogger::check_if_file_exists(const std::__cxx11::string filename)
+bool simpleLogger::checkIfFileExists(const std::__cxx11::string filename)
 {
     std::ifstream file(filename);
     return file.good();
+}
+
+bool simpleLogger::checkFileSizeExceedsLimit(const std::__cxx11::string filename)
+{
+    std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
+    size_t file_size = in.tellg();
+    return (file_size > logfileSizeLimit);
+}
+
+void simpleLogger::checkLogfile()
+{
+    if(checkFileSizeExceedsLimit(this->logFilePath))
+    {
+        logFileWriter << "Swapping logfile due to size limits" << std::endl;
+        logFileWriter.close();
+        //This will trigger moving the current logfile to a an old logfile
+        setLogFilePath(this->logFilePath);
+    }
 }

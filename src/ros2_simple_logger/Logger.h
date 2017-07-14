@@ -93,11 +93,18 @@ public:
      */
     virtual ~simpleLogger();
 
+    /**
+     * @brief setLogfileSizeLimit
+     * @param limit in bytes
+     */
+    void setLogfileSizeLimit(size_t limit);
+
 private:
     /**
      * @brief private constructor for simpleLogger
      */
     simpleLogger();
+
     /**
      * @brief publisher used for communication via ros2
      */
@@ -123,9 +130,14 @@ private:
      * TODO implement getter and setters
      */
     LogLevel printLogLevel = LogLevel::Info;
-    LogLevel fileLogLevel = LogLevel::Info;
+    LogLevel fileLogLevel = LogLevel::Debug;
     LogLevel messageLogLevel = LogLevel::Info;
 
+
+    /**
+     * @brief logfileSizeLimit - defaults to 1MB
+     */
+    size_t logfileSizeLimit = 1048576;
 
    
 
@@ -148,7 +160,10 @@ private:
      * @return true in case file exists.
      * //TODO Move into extra file
      */
-    bool check_if_file_exists(const std::string filename);
+    bool checkIfFileExists(const std::string filename);
+
+    bool checkFileSizeExceedsLimit(const std::string filename);
+    void checkLogfile();
 
 };
 
