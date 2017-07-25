@@ -164,6 +164,6 @@ private:
 
     bool checkFileSizeExceedsLimit(const std::string filename);
     void checkLogfile();
-
+    std::string node_name;
 };
 
