@@ -16,6 +16,10 @@ public:
     {
         disableLogToConsole = !state;
     }
+    void setFilter(std::string nodeName)
+    {
+        this->filterNodeName = nodeName;
+    }
 
     time_t get_time_from_msg(ros2_simple_logger::msg::LoggingMessage::SharedPtr msg)
     {
@@ -44,34 +48,41 @@ public:
 private:
     void internalListenerCallback(ros2_simple_logger::msg::LoggingMessage::SharedPtr msg)
     {
+        if(filterNodeName != "")
+        {
+            if(msg->nodename != filterNodeName)
+            {
+                return;
+            }
+        }
 
         if(loggingCallback)
             loggingCallback(msg);
 
         if(disableLogToConsole)
             return;
+
         std::string levelStr = "";
         int level = msg->level;
         switch(level)
         {
         case Debug:
-            levelStr = printInColor("Debug", ConsoleColor::FG_DEFAULT, ConsoleColor::BG_GREEN);
+            levelStr = printInColor("Debug  : ", ConsoleColor::FG_BLUE);
             break;
         case Info:
-            levelStr = printInColor("Info ", ConsoleColor::FG_GREEN);
+            levelStr = printInColor("Info   : ", ConsoleColor::FG_GREEN);
             break;
         case Important:
-            levelStr = printInColor("Important ", ConsoleColor::FG_BLUE);
+            levelStr = printInColor("Important: ", ConsoleColor::FG_WHITE, ConsoleColor::BG_GREEN);
             break;
         case Warning:
-            levelStr = printInColor("Warning ", ConsoleColor::FG_RED);
+            levelStr = printInColor("Warning: ", ConsoleColor::FG_RED);
             break;
         case Error:
-            levelStr = printInColor("Error ", ConsoleColor::FG_RED, ConsoleColor::BG_YELLOW);
+            levelStr = printInColor("Error  : ", ConsoleColor::FG_RED, ConsoleColor::BG_YELLOW);
             break;
-
         case Fatal:
-            levelStr = printInColor("Fatal ", ConsoleColor::FG_RED, ConsoleColor::BG_WHITE);
+            levelStr = printInColor("Fatal  : ", ConsoleColor::FG_RED, ConsoleColor::BG_WHITE);
             break;
         }
         std::cout<< get_time_as_string(get_time_from_msg(msg)) << " : " << levelStr << " : " << msg->message << std::endl;
@@ -82,6 +93,7 @@ private:
     rclcpp::node::Node::SharedPtr node;
     rclcpp::subscription::Subscription<ros2_simple_logger::msg::LoggingMessage>::SharedPtr subscription;
     std::function<void(ros2_simple_logger::msg::LoggingMessage::SharedPtr)> loggingCallback;
+    std::string filterNodeName = "";
 
 };
 

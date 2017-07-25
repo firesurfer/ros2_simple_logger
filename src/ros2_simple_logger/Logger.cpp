@@ -160,7 +160,7 @@ int simpleLogger::overflow(int c)
         if(messageLogLevel <= currentLogLevel && publisher != NULL){
             auto msg = std::make_shared<ros2_simple_logger::msg::LoggingMessage>();
             msg->stamp = time;
-            msg->level = messageLogLevel;
+            msg->level = currentLogLevel;
             msg->message = log_stream.str();
             msg->nodename = this->node_name;
             publisher->publish(msg);
