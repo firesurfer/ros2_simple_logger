@@ -8,7 +8,7 @@ void simpleLogger::initLogger(rclcpp::node::Node::SharedPtr _node)
 {
     std::lock_guard<std::mutex> lock(globalLogger_mutex);
     this->node_name = _node->get_name();
-    this->publisher = _node->create_publisher<ros2_simple_logger::msg::LoggingMessage>("ros2_log", rmw_qos_profile_sensor_data);
+    this->publisher = _node->create_publisher<ros2_simple_logger::msg::LoggingMessage>("ros2_log", rmw_qos_profile_default);
 }
 
 simpleLogger *simpleLogger::getInstance()
