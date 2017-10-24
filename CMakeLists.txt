@@ -25,15 +25,12 @@ set(message_files
 rosidl_generate_interfaces(${PROJECT_NAME}
     ${message_files}
     DEPENDENCIES builtin_interfaces
-
     )
 
-#get_available_rmw_implementations(middleware_implementations)
-#foreach(middleware_impl ${middleware_implementations})
-#    find_package("${middleware_impl}" REQUIRED)
-#endforeach()
 
 get_default_rmw_implementation(rmw_implementation)
+#Remove this line in case you want to force another rmw implementation.
+set(rmw_implementation "rmw_fastrtps_cpp")
 get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
 
 MESSAGE("Default rmw_implementation is:" ${rmw_implementation})
@@ -72,7 +69,7 @@ target_link_libraries(ros2_simple_logger_lib
 
 add_executable(ros2_simple_logger_test ${CMAKE_CURRENT_SOURCE_DIR}/test/test_main.cpp)
 add_dependencies(ros2_simple_logger_test ${PROJECT_NAME})
-get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
+
 target_compile_definitions(ros2_simple_logger_test PUBLIC "RMW_IMPLEMENTATION=${rmw_implementation}")
 
 foreach(typesupport_impl ${typesupport_impls})
@@ -88,7 +85,7 @@ target_link_libraries(ros2_simple_logger_test
 
 add_executable(ros2_simple_logger_echo ${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_simple_logger/SimpleLoggerEcho.cpp)
 add_dependencies(ros2_simple_logger_test ${PROJECT_NAME})
-get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
+
 target_compile_definitions(ros2_simple_logger_echo PUBLIC "RMW_IMPLEMENTATION=${rmw_implementation}")
 
 foreach(typesupport_impl ${typesupport_impls})
