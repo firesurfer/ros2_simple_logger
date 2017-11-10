@@ -77,7 +77,7 @@ simpleLogger &simpleLogger::getStream(LogLevel level)
     return *this;
 }
 
-void simpleLogger::set_now(builtin_interfaces::msg::Time &time)
+void simpleLogger::setNow(builtin_interfaces::msg::Time &time)
 {
     //See ros2 demos for more information
     std::chrono::nanoseconds now = std::chrono::high_resolution_clock::now().time_since_epoch();
@@ -111,7 +111,7 @@ int simpleLogger::overflow(int c)
 
         //Prepare ros message
         //builtin_interfaces::msg::Time time;
-        set_now(time);
+        setNow(time);
         //msg->level = level;
         //msg->stamp = time;
 

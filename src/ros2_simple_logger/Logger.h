@@ -60,7 +60,7 @@ public:
      * @brief set_now -  Fills the builtin ros2 time messagge with the current time.
      * @param time - Ros2 Time message.
      */
-    static void set_now(builtin_interfaces::msg::Time & time);
+    static void setNow(builtin_interfaces::msg::Time & time);
     /**
      * @brief setLogLevel
      * @param level
@@ -114,7 +114,7 @@ private:
      */
     static simpleLogger* instance;
     /**
-     * @brief globalLogger_mutex - Used for implemented some kind of threadsafety. (Not perfect)
+     * @brief globalLogger_mutex - Used for implementing some kind of threadsafety. (Not perfect)
      */
     static std::mutex globalLogger_mutex;
 
