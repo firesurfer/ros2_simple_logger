@@ -4,7 +4,7 @@
 
 
 
-simpleLoggerSubscriber::simpleLoggerSubscriber(rclcpp::node::Node::SharedPtr _node)
+simpleLoggerSubscriber::simpleLoggerSubscriber(rclcpp::Node::SharedPtr _node)
 {
     node = _node;
     using namespace std::placeholders;

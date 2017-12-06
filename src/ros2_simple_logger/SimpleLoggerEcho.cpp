@@ -1,11 +1,11 @@
 #include "ros2_simple_logger/Logger.h"
 #include "ros2_simple_logger/SimpleLoggerSubscriber.h"
-rclcpp::node::Node::SharedPtr node;
+rclcpp::Node::SharedPtr node;
 
 int main(int argc, char **argv)
 {
     rclcpp::init(argc,argv);
-    node = std::make_shared<rclcpp::node::Node>("simpleLoggerEcho");
+    node = std::make_shared<rclcpp::Node>("simpleLoggerEcho");
 
     INIT_LOGGER(node);
     simpleLoggerSubscriber* test = new simpleLoggerSubscriber(node);

@@ -79,7 +79,7 @@ public:
      * @param _node
      * Needs to be called before any log messages can be send via ros2.
      */
-    void initLogger(rclcpp::node::Node::SharedPtr _node);
+    void initLogger(rclcpp::Node::SharedPtr _node);
     /**
      * @brief getStream
      * @param level
@@ -108,7 +108,7 @@ private:
     /**
      * @brief publisher used for communication via ros2
      */
-    rclcpp::publisher::Publisher<ros2_simple_logger::msg::LoggingMessage>::SharedPtr publisher;
+    rclcpp::Publisher<ros2_simple_logger::msg::LoggingMessage>::SharedPtr publisher;
     /**
      * @brief singleton instance
      */

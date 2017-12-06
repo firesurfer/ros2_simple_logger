@@ -1,7 +1,7 @@
 #include "ros2_simple_logger/Logger.h"
 #include "ros2_simple_logger/SimpleLoggerSubscriber.h"
 
-rclcpp::node::Node::SharedPtr node;
+rclcpp::Node::SharedPtr node;
 bool abortSpin = false;
 
 void spin()
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 {
     std::cout << "GCC Version:" << __GNUC__ << std::endl;
     rclcpp::init(argc,argv);
-	node = std::make_shared<rclcpp::node::Node>("DemoLogger");
+    node = std::make_shared<rclcpp::Node>("DemoLogger");
     std::thread  spinner(&spin);
     INIT_LOGGER(node);
     simpleLoggerSubscriber::SharedPtr test = std::make_shared<simpleLoggerSubscriber>(node);

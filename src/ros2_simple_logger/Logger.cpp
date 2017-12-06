@@ -4,7 +4,7 @@ simpleLogger* simpleLogger::instance = NULL;
 
 std::mutex simpleLogger::globalLogger_mutex;
 
-void simpleLogger::initLogger(rclcpp::node::Node::SharedPtr _node)
+void simpleLogger::initLogger(rclcpp::Node::SharedPtr _node)
 {
     std::lock_guard<std::mutex> lock(globalLogger_mutex);
     this->node_name = _node->get_name();
