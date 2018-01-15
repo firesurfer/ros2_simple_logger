@@ -99,6 +99,24 @@ public:
      */
     void setLogfileSizeLimit(size_t limit);
 
+    LogLevel fromString(std::string str)
+    {
+        if(str == "Debug")
+            return LogLevel::Debug;
+        else if(str == "Info")
+            return LogLevel::Info;
+        else if(str == "Important")
+            return LogLevel::Important;
+        else if(str == "Warning")
+            return LogLevel::Warning;
+        else if(str == "Error")
+            return LogLevel::Error;
+        else if(str == "Fatal")
+            return LogLevel::Error;
+        return LogLevel::Info;
+
+    }
+
 private:
     /**
      * @brief private constructor for simpleLogger
