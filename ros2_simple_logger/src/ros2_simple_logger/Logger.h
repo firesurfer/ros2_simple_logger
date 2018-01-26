@@ -10,7 +10,7 @@
 #include <streambuf>
 #include <fstream>
 #include "rclcpp/rclcpp.hpp"
-#include "ros2_simple_logger/msg/logging_message.hpp"
+#include "ros2_simple_logger_msgs/msg/logging_message.hpp"
 #include <ros2_simple_logger/ConsoleColor.h>
 
 
@@ -126,7 +126,7 @@ private:
     /**
      * @brief publisher used for communication via ros2
      */
-    rclcpp::Publisher<ros2_simple_logger::msg::LoggingMessage>::SharedPtr publisher;
+    rclcpp::Publisher<ros2_simple_logger_msgs::msg::LoggingMessage>::SharedPtr publisher;
     /**
      * @brief singleton instance
      */

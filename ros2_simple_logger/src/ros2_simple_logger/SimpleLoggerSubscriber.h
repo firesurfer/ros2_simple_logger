@@ -8,7 +8,7 @@ class simpleLoggerSubscriber
 public:
     typedef std::shared_ptr<simpleLoggerSubscriber> SharedPtr;
     simpleLoggerSubscriber(rclcpp::Node::SharedPtr _node);
-    void setLoggingCallback(std::function<void(ros2_simple_logger::msg::LoggingMessage::SharedPtr)> func)
+    void setLoggingCallback(std::function<void(ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr)> func)
     {
         loggingCallback = func;
     }
@@ -21,7 +21,7 @@ public:
         this->filterNodeName = nodeName;
     }
 
-    time_t get_time_from_msg(ros2_simple_logger::msg::LoggingMessage::SharedPtr msg)
+    time_t get_time_from_msg(ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr msg)
     {
         int64_t unixtime = msg->stamp.sec + msg->stamp.nanosec/1000000000;
 
@@ -46,7 +46,7 @@ public:
         return ss.str();
     }
 private:
-    void internalListenerCallback(ros2_simple_logger::msg::LoggingMessage::SharedPtr msg)
+    void internalListenerCallback(ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr msg)
     {
         if(filterNodeName != "")
         {
@@ -91,8 +91,8 @@ private:
 
     bool disableLogToConsole = false;
     rclcpp::Node::SharedPtr node;
-    rclcpp::Subscription<ros2_simple_logger::msg::LoggingMessage>::SharedPtr subscription;
-    std::function<void(ros2_simple_logger::msg::LoggingMessage::SharedPtr)> loggingCallback;
+    rclcpp::Subscription<ros2_simple_logger_msgs::msg::LoggingMessage>::SharedPtr subscription;
+    std::function<void(ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr)> loggingCallback;
     std::string filterNodeName = "";
 
 };

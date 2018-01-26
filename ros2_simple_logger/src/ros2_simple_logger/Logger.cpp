@@ -8,7 +8,7 @@ void simpleLogger::initLogger(rclcpp::Node::SharedPtr _node)
 {
     std::lock_guard<std::mutex> lock(globalLogger_mutex);
     this->node_name = _node->get_name();
-    this->publisher = _node->create_publisher<ros2_simple_logger::msg::LoggingMessage>("ros2_log", rmw_qos_profile_default);
+    this->publisher = _node->create_publisher<ros2_simple_logger_msgs::msg::LoggingMessage>("ros2_log", rmw_qos_profile_default);
 }
 
 simpleLogger *simpleLogger::getInstance()
@@ -158,7 +158,7 @@ int simpleLogger::overflow(int c)
             checkLogfile();
         }
         if(messageLogLevel <= currentLogLevel && publisher != NULL){
-            auto msg = std::make_shared<ros2_simple_logger::msg::LoggingMessage>();
+            auto msg = std::make_shared<ros2_simple_logger_msgs::msg::LoggingMessage>();
             msg->stamp = time;
             msg->level = currentLogLevel;
             msg->message = log_stream.str();
