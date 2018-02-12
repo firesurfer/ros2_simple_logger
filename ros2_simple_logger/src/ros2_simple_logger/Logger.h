@@ -99,6 +99,8 @@ public:
      */
     void setLogfileSizeLimit(size_t limit);
 
+    void setLoggerCallback(std::function<void(std::string,LogLevel)> _callback);
+
     LogLevel fromString(std::string str)
     {
         if(str == "Debug")
@@ -115,6 +117,31 @@ public:
             return LogLevel::Error;
         return LogLevel::Info;
 
+    }
+    std::string levelToString(LogLevel level)
+    {
+        switch(level)
+        {
+        case Debug:
+            return "Debug";
+            break;
+        case Info:
+            return "Info";
+            break;
+        case Important:
+            return "Important";
+            break;
+        case Warning:
+            return "Warning";
+            break;
+        case Error:
+            return "Error";
+            break;
+        case Fatal:
+            return "Fatal";
+            break;
+
+        }
     }
 
 private:
@@ -183,5 +210,7 @@ private:
     bool checkFileSizeExceedsLimit(const std::string filename);
     void checkLogfile();
     std::string node_name;
+
+    std::function<void(std::string, LogLevel)> loggerCallback;
 };
 

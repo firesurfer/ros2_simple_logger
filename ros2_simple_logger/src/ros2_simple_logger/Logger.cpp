@@ -30,6 +30,11 @@ void simpleLogger::setLogfileSizeLimit(size_t limit)
     this->logfileSizeLimit = limit;
 }
 
+void simpleLogger::setLoggerCallback(std::function<void(std::string, LogLevel)> _callback)
+{
+    this->loggerCallback = _callback;
+}
+
 void simpleLogger::setLogLevel(LogLevel level)
 {
     messageLogLevel = level;
@@ -164,6 +169,10 @@ int simpleLogger::overflow(int c)
             msg->message = log_stream.str();
             msg->nodename = this->node_name;
             publisher->publish(msg);
+        }
+        if(loggerCallback != nullptr)
+        {
+            loggerCallback(log_stream.str(), currentLogLevel);
         }
         log_stream.str("");
     }
