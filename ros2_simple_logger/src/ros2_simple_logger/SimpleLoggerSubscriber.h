@@ -22,7 +22,7 @@ public:
         this->filterNodeName = nodeName;
     }
 
-    time_t get_time_from_msg(ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr msg)
+    static time_t get_time_from_msg(ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr msg)
     {
         int64_t unixtime = msg->stamp.sec + msg->stamp.nanosec/1000000000;
 
@@ -34,7 +34,7 @@ public:
 
         return time;
     }
-    std::string get_time_as_string(time_t time)
+    static std::string get_time_as_string(time_t time)
     {
         std::stringstream ss;
 

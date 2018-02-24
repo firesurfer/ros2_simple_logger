@@ -31,7 +31,7 @@ void simpleLogger::setLogfileSizeLimit(size_t limit)
     this->logfileSizeLimit = limit;
 }
 
-void simpleLogger::setLoggerCallback(std::function<void(std::string, LogLevel)> _callback)
+void simpleLogger::setLoggerCallback(std::function<void(std::string, LogLevel,std::string)> _callback)
 {
     this->loggerCallback = _callback;
 }
@@ -190,7 +190,7 @@ int simpleLogger::overflow(int c)
         }
         if(loggerCallback != nullptr)
         {
-            loggerCallback(log_stream.str(), currentLogLevel);
+            loggerCallback(log_stream.str(), currentLogLevel, timeStrStream.str());
         }
         log_stream.str("");
     }

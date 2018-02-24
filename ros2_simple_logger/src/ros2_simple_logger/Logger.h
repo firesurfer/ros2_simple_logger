@@ -100,7 +100,7 @@ public:
      */
     void setLogfileSizeLimit(size_t limit);
 
-    void setLoggerCallback(std::function<void(std::string,LogLevel)> _callback);
+    void setLoggerCallback(std::function<void(std::string,LogLevel,std::string)> _callback);
 
     LogLevel fromString(std::string str)
     {
@@ -216,6 +216,6 @@ private:
     std::string node_name;
     uint16_t history_size = 150;
     std::list<ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr> history_queue;
-    std::function<void(std::string, LogLevel)> loggerCallback;
+    std::function<void(std::string, LogLevel, std::string)> loggerCallback;
 };
 
