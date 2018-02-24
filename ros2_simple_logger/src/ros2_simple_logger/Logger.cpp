@@ -9,6 +9,7 @@ void simpleLogger::initLogger(rclcpp::Node::SharedPtr _node)
     std::lock_guard<std::mutex> lock(globalLogger_mutex);
     this->node_name = _node->get_name();
     this->publisher = _node->create_publisher<ros2_simple_logger_msgs::msg::LoggingMessage>("ros2_log", rmw_qos_profile_default);
+    this->requestHistorySubscription = _node->create_subscription<std_msgs::msg::String>("ros2_request_log_history", std::bind(&simpleLogger::requestHistory,this, std::placeholders::_1), rmw_qos_profile_default);
 }
 
 simpleLogger *simpleLogger::getInstance()
@@ -101,6 +102,17 @@ simpleLogger::simpleLogger():std::ostream(this)
 
 }
 
+void simpleLogger::requestHistory(std_msgs::msg::String::SharedPtr msg)
+{
+    if(msg->data == this->node_name)
+    {
+        for(auto & elem: history_queue)
+        {
+            publisher->publish(elem);
+        }
+    }
+}
+
 
 int simpleLogger::overflow(int c)
 {
@@ -168,6 +180,12 @@ int simpleLogger::overflow(int c)
             msg->level = currentLogLevel;
             msg->message = log_stream.str();
             msg->nodename = this->node_name;
+
+            this->history_queue.push_back(msg);
+            while(history_queue.size() > history_size)
+            {
+                history_queue.pop_front();
+            }
             publisher->publish(msg);
         }
         if(loggerCallback != nullptr)

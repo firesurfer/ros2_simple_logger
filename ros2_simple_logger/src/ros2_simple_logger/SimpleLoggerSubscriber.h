@@ -7,7 +7,8 @@ class simpleLoggerSubscriber
 {
 public:
     typedef std::shared_ptr<simpleLoggerSubscriber> SharedPtr;
-    simpleLoggerSubscriber(rclcpp::Node::SharedPtr _node);
+
+    simpleLoggerSubscriber(rclcpp::Node::SharedPtr _node, bool request_history= false, std::string node_name_for_history = "");
     void setLoggingCallback(std::function<void(ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr)> func)
     {
         loggingCallback = func;
@@ -92,6 +93,7 @@ private:
     bool disableLogToConsole = false;
     rclcpp::Node::SharedPtr node;
     rclcpp::Subscription<ros2_simple_logger_msgs::msg::LoggingMessage>::SharedPtr subscription;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr requestHistoryPub;
     std::function<void(ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr)> loggingCallback;
     std::string filterNodeName = "";
 

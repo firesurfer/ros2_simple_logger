@@ -15,7 +15,7 @@ find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(ros2_simple_logger_msgs REQUIRED)
-
+find_package(std_msgs REQUIRED)
 
 include_directories(
     ${rclcpp_INCLUDE_DIRS}
@@ -27,6 +27,7 @@ add_library(ros2_simple_logger_lib ${SRC_FILES} )
 ament_target_dependencies(ros2_simple_logger_lib
     rclcpp
     ros2_simple_logger_msgs
+    std_msgs
 )
 
 target_link_libraries(ros2_simple_logger_lib
@@ -40,6 +41,7 @@ add_executable(ros2_simple_logger_test ${CMAKE_CURRENT_SOURCE_DIR}/test/test_mai
 ament_target_dependencies(ros2_simple_logger_test
     rclcpp
     ros2_simple_logger_msgs
+    std_msgs
 )
 target_link_libraries(ros2_simple_logger_test
     ros2_simple_logger_lib
@@ -52,6 +54,7 @@ add_executable(ros2_simple_logger_echo ${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_simp
 ament_target_dependencies(ros2_simple_logger_echo
     rclcpp
     ros2_simple_logger_msgs
+    std_msgs
 )
 
 target_link_libraries(ros2_simple_logger_echo

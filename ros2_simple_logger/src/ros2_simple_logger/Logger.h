@@ -12,7 +12,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "ros2_simple_logger_msgs/msg/logging_message.hpp"
 #include <ros2_simple_logger/ConsoleColor.h>
-
+#include <std_msgs/msg/string.hpp>
+#include <list>
 
 typedef enum
 {
@@ -154,6 +155,9 @@ private:
      * @brief publisher used for communication via ros2
      */
     rclcpp::Publisher<ros2_simple_logger_msgs::msg::LoggingMessage>::SharedPtr publisher;
+    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr requestHistorySubscription;
+
+    void requestHistory(std_msgs::msg::String::SharedPtr msg);
     /**
      * @brief singleton instance
      */
@@ -210,7 +214,8 @@ private:
     bool checkFileSizeExceedsLimit(const std::string filename);
     void checkLogfile();
     std::string node_name;
-
+    uint16_t history_size = 150;
+    std::list<ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr> history_queue;
     std::function<void(std::string, LogLevel)> loggerCallback;
 };
 
