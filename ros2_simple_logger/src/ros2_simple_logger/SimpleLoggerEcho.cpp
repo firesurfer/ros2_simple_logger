@@ -8,9 +8,9 @@ int main(int argc, char **argv)
     node = std::make_shared<rclcpp::Node>("simpleLoggerEcho");
 
     INIT_LOGGER(node);
-    simpleLoggerSubscriber* test = new simpleLoggerSubscriber(node);
+    simpleLoggerSubscriber subscriber(node);
     rclcpp::WallRate loop_rate(20);
-    while(true)
+    while(rclcpp::ok())
     {
         rclcpp::spin_some(node);
         loop_rate.sleep();

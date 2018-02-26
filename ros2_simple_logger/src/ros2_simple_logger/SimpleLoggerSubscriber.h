@@ -68,33 +68,33 @@ private:
         switch(level)
         {
         case Debug:
-            levelStr = printInColor("Debug  : ", ConsoleColor::FG_BLUE);
+            levelStr = printInColor("Debug", ConsoleColor::FG_BLUE);
             break;
         case Info:
-            levelStr = printInColor("Info   : ", ConsoleColor::FG_GREEN);
+            levelStr = printInColor("Info", ConsoleColor::FG_GREEN);
             break;
         case Important:
-            levelStr = printInColor("Important: ", ConsoleColor::FG_WHITE, ConsoleColor::BG_GREEN);
+            levelStr = printInColor("Important", ConsoleColor::FG_WHITE, ConsoleColor::BG_GREEN);
             break;
         case Warning:
-            levelStr = printInColor("Warning: ", ConsoleColor::FG_RED);
+            levelStr = printInColor("Warning", ConsoleColor::FG_RED);
             break;
         case Error:
-            levelStr = printInColor("Error  : ", ConsoleColor::FG_RED, ConsoleColor::BG_YELLOW);
+            levelStr = printInColor("Error", ConsoleColor::FG_RED, ConsoleColor::BG_YELLOW);
             break;
         case Fatal:
-            levelStr = printInColor("Fatal  : ", ConsoleColor::FG_RED, ConsoleColor::BG_WHITE);
+            levelStr = printInColor("Fatal", ConsoleColor::FG_RED, ConsoleColor::BG_WHITE);
             break;
         }
-        std::cout<< get_time_as_string(get_time_from_msg(msg)) << " : " << levelStr << " : " << msg->message << std::endl;
+        std::cout<< get_time_as_string(get_time_from_msg(msg)) << " : " << msg->nodename << " : " << levelStr << " : " << msg->message << std::endl;
 
     }
 
     bool disableLogToConsole = false;
     rclcpp::Node::SharedPtr node;
+    std::function<void(ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr)> loggingCallback;
     rclcpp::Subscription<ros2_simple_logger_msgs::msg::LoggingMessage>::SharedPtr subscription;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr requestHistoryPub;
-    std::function<void(ros2_simple_logger_msgs::msg::LoggingMessage::SharedPtr)> loggingCallback;
     std::string filterNodeName = "";
 
 };
