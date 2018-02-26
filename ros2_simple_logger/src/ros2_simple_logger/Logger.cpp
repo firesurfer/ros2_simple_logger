@@ -22,6 +22,7 @@ simpleLogger *simpleLogger::getInstance()
 
 simpleLogger::~simpleLogger()
 {
+    std::lock_guard<std::mutex> lock(globalLogger_mutex);
     //Close the file writer
     logFileWriter.close();
 }
