@@ -57,6 +57,7 @@ public:
      * @return Instance of the logger singleton
      */
     static simpleLogger* getInstance();
+
     /**
      * @brief set_now -  Fills the builtin ros2 time messagge with the current time.
      * @param time - Ros2 Time message.

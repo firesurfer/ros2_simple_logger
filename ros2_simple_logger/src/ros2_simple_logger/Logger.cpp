@@ -1,6 +1,6 @@
 #include "ros2_simple_logger/Logger.h"
 
-simpleLogger* simpleLogger::instance = NULL;
+
 
 std::mutex simpleLogger::globalLogger_mutex;
 
@@ -14,11 +14,11 @@ void simpleLogger::initLogger(rclcpp::Node::SharedPtr _node)
 
 simpleLogger *simpleLogger::getInstance()
 {
-    //TODO check if a static local instance would be better
-    if(instance == NULL)
-        instance = new simpleLogger();
-    return instance;
+    std::lock_guard<std::mutex> lock(globalLogger_mutex);
+    static simpleLogger instance;
+    return &instance;
 }
+
 
 simpleLogger::~simpleLogger()
 {
@@ -174,7 +174,7 @@ int simpleLogger::overflow(int c)
             logFileWriter.flush();
             checkLogfile();
         }
-        if(messageLogLevel <= currentLogLevel && publisher != NULL){
+        if(messageLogLevel <= currentLogLevel && publisher != nullptr){
             auto msg = std::make_shared<ros2_simple_logger_msgs::msg::LoggingMessage>();
             msg->stamp = time;
             msg->level = currentLogLevel;
